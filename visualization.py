@@ -4,8 +4,8 @@ from mesa.visualization.modules import CanvasGrid
 from mesa.visualization.ModularVisualization import ModularServer
 
 
-h = 25
-w = 25
+h = 50
+w = 50
 
 def agent_portrayal(agent):
 
@@ -20,13 +20,15 @@ def agent_portrayal(agent):
         portrayal["Color"] = "Brown"
         portrayal["Shape"] = "circle"
         portrayal["Layer"] = "4"
+        portrayal["r"] = .5
 
 
     if type(agent) is StoneSource:
 
         portrayal["Color"] = "grey"
         portrayal["Shape"] = "circle"
-        portrayal["Layer"] = "2"
+        portrayal["Layer"] = "3"
+        portrayal["r"] = .75
 
     if type(agent) is NutTree:
 
@@ -36,10 +38,20 @@ def agent_portrayal(agent):
 
     if type(agent) is PoundingTool:
 
-        portrayal["Color"] = "black"
-        portrayal["Shape"] = "circle"
-        portrayal["Layer"] = "1"
-        portrayal["radius"] = ".25"
+            portrayal["Color"] = "red"
+            portrayal["Shape"] = "circle"
+            portrayal["Layer"] = "4"
+            portrayal["r"] = ".5"
+
+    if agent.active is False:
+
+            portrayal["Color"] = "black"
+            portrayal["Shape"] = "circle"
+            portrayal["Layer"] = "5"
+            portrayal["r"] = ".25"
+
+    else:
+        pass
 
     return portrayal
 
@@ -50,9 +62,9 @@ grid = CanvasGrid(agent_portrayal, h, w, 750, 750)
 server = ModularServer(PrimToolModel,
                        [grid],
                        "Primate Tool Model",
-                       {"Na":5,
+                       {"Na":100,
                         "Ns": 50,
-                        "Nn": 25,
+                        "Nn": 100,
                         "width":h, "height":w})
 server.port = 8521 # The default
 server.launch()
