@@ -122,8 +122,6 @@ class PrimAgent(Agent):
 
                 if Break_prob <= 25:
 
-                    print("Breaking Stone")
-                    print(stone.Tool_size)
                     identifier = self.model.next_id()
                     self.BreakStone(stone)
 
@@ -199,7 +197,11 @@ class NutTree(Agent):
 
     def step(self):
 
-        self.doIdie()
+        if self.model.treesdie is True:
+            self.doIdie()
+        else:
+            pass
+
 
 
 class PoundingTool(Agent):
@@ -213,11 +215,12 @@ class PoundingTool(Agent):
 ### Environemnt
 
 class PrimToolModel(Model):
-    def __init__(self, Na,Ns,Nn, height, width):
+    def __init__(self, Na,Ns,Nn, height, width, treesdie):
         self.current_id = 0
         self.num_agents = Na
         self.num_sources = Ns
         self.num_nuttree = Nn
+        self.treesdie = treesdie
         self.schedule = RandomActivation(self)
         self.grid = MultiGrid(width=width,
                               height=height,
@@ -262,8 +265,11 @@ class PrimToolModel(Model):
 
         '''Advances the model by one step'''
         self.schedule.step()
-        self.Growtree()
-        self.timestep =+ 1
+        if self.treesdie is True:
+            self.Growtree()
+        else:
+            pass
+        self.timestep += 1
         #print(self.timestep)
 
 

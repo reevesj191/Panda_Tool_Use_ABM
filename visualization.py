@@ -38,17 +38,17 @@ def agent_portrayal(agent):
 
     if type(agent) is PoundingTool:
 
-            portrayal["Color"] = "red"
-            portrayal["Shape"] = "circle"
-            portrayal["Layer"] = "4"
-            portrayal["r"] = ".5"
+        portrayal["Color"] = "red"
+        portrayal["Shape"] = "circle"
+        portrayal["Layer"] = "4"
+        portrayal["r"] = ".5"
 
     if agent.active is False:
 
-            portrayal["Color"] = "black"
-            portrayal["Shape"] = "circle"
-            portrayal["Layer"] = "5"
-            portrayal["r"] = ".25"
+        portrayal["Color"] = "black"
+        portrayal["Shape"] = "circle"
+        portrayal["Layer"] = "5"
+        portrayal["r"] = ".25"
 
     else:
         pass
@@ -64,7 +64,8 @@ server = ModularServer(PrimToolModel,
                        "Primate Tool Model",
                        {"Na":100,
                         "Ns": 50,
-                        "Nn": 100,
-                        "width":h, "height":w})
+                        "Nn": 25,
+                        "width": h, "height": w,
+                        "treesdie": True})
 server.port = 8521 # The default
 server.launch()
