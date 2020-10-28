@@ -5,12 +5,12 @@ print("Running Model....")
 
 model = PrimToolModel(Na=100,
                       Ns=100,
-                      Nn=100,
+                      Nn=50,
                       height=100,
                       width=100,
-                      treesdie=False)
+                      treesdie=True)
 
-for i in range(100000):
+for i in range(30000):
     model.step()
 
 mesa_id = []
