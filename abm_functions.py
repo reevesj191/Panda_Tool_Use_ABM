@@ -9,6 +9,35 @@ def get_random_alphanumeric_string(length):
     return result_str
 
 
+
+
+def ClosestAgent(pos, list):
+
+    pos_dists = []
+
+
+    x1, y1 = pos
+
+    for agent in list:
+        x2, y2 = agent.pos
+
+        distance = math.sqrt(((x1-x2)**2)+((y1-y2) **2))
+        pos_dists.append([distance])
+
+    return pos_dists.index(min(pos_dists))
+
+
+
+
+
+
+
+
+
+
+    pass
+
+
 def create_DB(db_file):
     """creates a database where all of the ABM data will be stored"""
     try:
