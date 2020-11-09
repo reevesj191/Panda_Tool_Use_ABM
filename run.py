@@ -13,13 +13,8 @@ model = PrimToolModel(Na=100,
 for i in range(30000):
     model.step()
 
-mesa_id = []
-pos = []
-x = []
-y = []
-size = []
 
-
+row = []
 print("Writing Stone Data")
 for agent in model.schedule.agents:
 
@@ -30,6 +25,10 @@ for agent in model.schedule.agents:
         x.append(agent.pos[0])
         y.append(agent.pos[1])
         size.append(agent.Tool_size)
+
+
+
+
 
 
 

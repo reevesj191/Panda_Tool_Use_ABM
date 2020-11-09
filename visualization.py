@@ -64,7 +64,8 @@ server = ModularServer(PrimToolModel,
                        "Primate Tool Model",
                        {"Na":100,
                         "Ns": 50,
-                        "Nn": 25,
+                        "Nn": 100,
+                        "max_ts": 1000,
                         "width": h, "height": w,
                         "treesdie": True})
 server.port = 8521 # The default

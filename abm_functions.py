@@ -27,17 +27,6 @@ def ClosestAgent(pos, list):
     return pos_dists.index(min(pos_dists))
 
 
-
-
-
-
-
-
-
-
-    pass
-
-
 def create_DB(db_file):
     """creates a database where all of the ABM data will be stored"""
     try:
@@ -46,69 +35,45 @@ def create_DB(db_file):
 
         run_data_table = """ CREATE TABLE IF NOT EXISTS run_data (
                                 run_id text PRIMARY KEY,
-                                movement_type text,
-                                nrounds integer,
-                                nsources integer,
-                                nattractors integer,
-                                ncores integer,
-                                core_drop_threshold text,
-                                core_replacement text,
-                                flake_probability text,
-                                global_cortex_ratio
-                                ); """
+                                datetime text,
+                                num_agents integer,
+                                num_sources integer,
+                                num_nutree integer,
+                                treessdie integer,
+                                tool_acq text,
+                                search_rad integer); """
 
-
-        flake_table = """ CREATE TABLE IF NOT EXISTS flakes (
+        source_data_table = """ CREATE TABLE IF NOT EXISTS sources (
                                 run_id text,
-                                movement_type text,
+                                id integer,
+                                x integer,
+                                y integer); """
+
+        tree_data_table = """ CREATE TABLE IF NOT EXISTS trees (
+                                run_id text,
+                                id integer,
                                 x integer,
                                 y integer,
-                                source_loc text,
-                                core_id text,
-                                cortex text,
-                                dp_volume text,
-                                flakes_made text,
-                                timestep text
-                                ); """
+                                ts_born text,
+                                alive text,
+                                ts_died text); """
 
-        cores_table = """ CREATE TABLE IF NOT EXISTS cores (
+        lithic_data_table = """ CREATE TABLE IF NOT EXISTS tools (
                                 run_id text,
-                                movement_type text,
+                                id text,
+                                parent_id text,
+                                source_id text,
                                 x integer,
                                 y integer,
-                                source_loc text,
-                                core_id text,
-                                initial_volume text,
-                                initial_cortex text,
-                                volume text,
-                                cortex text,
-                                flakes_made text,
-                                replaced text,
-                                timestep text
-                                );
-                                """
-
-        attractors_table = """ CREATE TABLE IF NOT EXISTS attractors (
-                                run_id text,
-                                movement_type text,
-                                x integer,
-                                y integer
-                                );
-                                """
-
-        sources_table = """ CREATE TABLE IF NOT EXISTS sources (
-                                run_id text text,
-                                movement_type text,
-                                x integer,
-                                y integer
-                                );
-                                """
+                                Tool_size text,
+                                active text); """
 
         c.execute(run_data_table)
-        c.execute(flake_table)
-        c.execute(cores_table)
-        c.execute(attractors_table)
-        c.execute(sources_table)
+        c.execute(source_data_table)
+        c.execute(lithic_data_table)
+        c.execute(tree_data_table)
+
+
 
     except sqlite3.Error as e:
 
@@ -118,4 +83,97 @@ def create_DB(db_file):
 
         conn.close()
 
-conn = create_DB("WABI.db")
+def connect_db(db_file):
+    a = 0
+    while a == 0:
+
+        try:
+            conn = sqlite3.connect(db_file)
+            return conn
+        except sqlite3.Error as e:
+            print(e)
+
+        return None
+
+def add_run_data(conn, data):
+    a = 0
+
+    while a == 0:
+        try:
+            sql_run_dat = """ INSERT INTO run_data(run_id, datetime, num_agents, num_sources, num_nutree, treessdie,
+            tool_acq, search_rad)
+
+                              VALUES(?,?,?,?,?,?,?,?)
+
+            """
+            conn.execute(sql_run_dat, data)
+            conn.commit()
+            a = 1
+
+        except sqlite3.Error as e:
+            print(e)
+            print("trying again")
+
+
+def add_source_data(conn, data):
+    a = 0
+
+    while a == 0:
+        try:
+            sql_run_dat = """ INSERT INTO sources(run_id, id, x, y)
+
+                              VALUES(?,?,?,?)
+
+            """
+            conn.execute(sql_run_dat, data)
+            conn.commit()
+            a = 1
+
+        except sqlite3.Error as e:
+            print(e)
+            print("trying again")
+
+
+def add_tree_data(conn, data):
+    a = 0
+
+    while a == 0:
+        try:
+            sql_run_dat = """ INSERT INTO trees(run_id, id, x, y, ts_born, alive, ts_died)
+
+                              VALUES(?,?,?,?,?,?,?)
+
+            """
+            conn.execute(sql_run_dat, data)
+            conn.commit()
+            a = 1
+
+        except sqlite3.Error as e:
+            print(e)
+            print("trying again")
+
+def add_tool_data(conn, data):
+    a = 0
+
+    while a == 0:
+        try:
+            sql_run_dat = """ INSERT INTO tools(
+                                run_id,
+                                id,
+                                parent_id,
+                                source_id,
+                                x,
+                                y,
+                                Tool_size,
+                                active)
+
+                              VALUES(?,?,?,?,?,?,?,?)
+
+            """
+            conn.execute(sql_run_dat, data)
+            conn.commit()
+            a = 1
+
+        except sqlite3.Error as e:
+            print(e)
+            print("trying again")
