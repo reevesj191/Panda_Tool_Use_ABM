@@ -10,7 +10,7 @@ from abm_functions import create_DB, add_run_data, add_source_data, add_tree_dat
 
 
 class PrimToolModel(Model):
-    def __init__(self, Na,Ns,Nn, height, width, treesdie, max_ts, search_rad = 5, tool_acq="random" , db_name="pyMate_Panda_ABM.db"):
+    def __init__(self, Na,Ns,Nn, height, width, treesdie, max_ts, search_rad = 5, tool_acq="nearest" , db_name="pyMate_Panda_ABM.db"):
         self.current_id = 0
         self.run_id = get_random_alphanumeric_string(6)
         self.datetime = datetime.now()
