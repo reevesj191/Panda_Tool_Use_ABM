@@ -87,14 +87,14 @@ for(i in unique(tools$run_id)){
   tree <- trees[trees$run_id == i,]
   
   
-  tool_ppp <-ppp(tool$x,tool$y, c(0,100), c(0,100))
+  tool_ppp <-ppp(tool$x,tool$y, c(0,500), c(0,500))
   tool_df <- as.data.frame(raster(density.ppp(tool_ppp,sigma = 2)),xy =TRUE)
   colnames(tool_df) <- c("x", "y", "tool_density")
   
-  source_ppp <-ppp(source$x,source$y, c(0,100), c(0,100))
+  source_ppp <-ppp(source$x,source$y, c(0,500), c(0,500))
   source_df <- as.data.frame(raster(density.ppp(source_ppp,sigma = 2)),xy = TRUE)
   
-  tree_ppp<- ppp(tree$x, tree$y, c(0,100), c(0,100))
+  tree_ppp<- ppp(tree$x, tree$y, c(0,500), c(0,500))
   tree_df <- as.data.frame(raster(density.ppp(tree_ppp,sigma = 2)),xy = TRUE)
   
   tool_df$source_density <- source_df$layer

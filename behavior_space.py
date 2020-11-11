@@ -3,16 +3,16 @@ from mesa.batchrunner import BatchRunner, BatchRunnerMP
 
 fixed_params = {"width": 500,
                 "height": 500,
-                "Na": 50,
-                "treesdie": True,
-                "max_ts": (10000)
+                "Na": 50
 }
 
 
 variable_params = {
-    "Ns": (10, 20, 30, 40),
-    "Nn": (10, 20, 30, 40),
-    "tool_acq": ("nearest","random")
+    "Ns": (50, 75, 100, 125, 150),
+    "Nn": (5, 10, 15, 20, 25, 30),
+    "tool_acq": ("nearest","random"),
+    "treesdie":(False, True),
+    "max_ts": (1000,10000,100000,1000000)
 }
 
 batch_run = BatchRunner(PrimToolModel,
