@@ -10,7 +10,7 @@ library(DBI)
 library(ggplot2)
 library(dplyr)
 library(gridExtra)
-
+### THis is where you query the data
 con <- DBI::dbConnect(RSQLite::SQLite(), "pyMate_Panda_ABM.db")
 run_data <- dbGetQuery(con, "SELECT * FROM run_data")
 tools <- dbGetQuery(con, "SELECT * FROM tools")
