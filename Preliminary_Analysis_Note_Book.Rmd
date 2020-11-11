@@ -1,0 +1,122 @@
+---
+title: "Panda ABM Functionality Analysis"
+author: "Jonathan Reeves"
+date: "11/5/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(DBI)
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+con <- DBI::dbConnect(RSQLite::SQLite(), "pyMate_Panda_ABM.db")
+run_data <- dbGetQuery(con, "SELECT * FROM run_data")
+tools <- dbGetQuery(con, "SELECT * FROM tools")
+sources <- dbGetQuery(con, "SELECT * FROM sources")
+trees <- dbGetQuery(con, "SELECT * FROM trees")
+dbDisconnect(conn = con)
+unique(tools$tool_acq)
+tools <- left_join(tools, run_data, by = "run_id")
+```
+
+
+```{r}
+
+random <- subset(tools, tool_acq == "random")
+near <- subset(tools, tool_acq == "nearest")
+
+
+a <- ggplot(random, aes(x=x, y=y, color= source_id)) + geom_point(show.legend = FALSE) +
+  #geom_point(data=sources, aes(x=x, y=y, color=as.character(id)), shape = 5, show.legend = FALSE)+
+  coord_equal()+
+  theme_bw()+
+  facet_wrap(~run_id)
+
+b <- ggplot(near, aes(x=x, y=y, color= source_id)) + geom_point(show.legend = FALSE) +
+  #geom_point(data=sources, aes(x=x, y=y, color=as.character(id)), shape = 5, show.legend = FALSE)+
+  coord_equal()+
+  theme_bw()+
+  facet_wrap(~run_id)
+  ?grid.arrange
+a
+b
+```
+
+## Representation of Tools by size
+```{r}
+ggplot(tools, aes(x = as.numeric(Tool_size), color = tool_acq))+ geom_density()+facet_grid(num_sources~num_nutree)+scale_x_log10()
+```
+
+## Distance to Source 
+
+```{r}
+sources$s_id <- paste0(sources$run_id,"-", sources$id)
+source_coords <- sources[,c("s_id", "x","y")]
+names(source_coords) <- c("s_id", "s_x","s_y")
+tools$s_id <- paste0(tools$run_id,"-", tools$source_id)
+
+tools <- left_join(tools,source_coords, by = 's_id')
+tools$d2source <- sqrt(((tools$x - tools$s_x)^2) + ((tools$y-tools$s_y)^2))
+
+ggplot(tools[tools$Tool_size > 200,], aes(x=d2source, y = as.numeric(Tool_size), color = tool_acq))+ geom_point()+ facet_grid(num_sources~num_nutree)
+```
+
+```{r}
+ggplot(tools, aes(x=d2source, fill = tool_acq))+ geom_histogram()+ facet_grid(num_sources~num_nutree)
+```
+
+```{r}
+ggplot(tools, aes(x= tool_acq, y = d2source))+ geom_boxplot()+ facet_grid(num_sources~num_nutree)
+```
+
+
+
+## Artifact Denisty
+
+```{r}
+library(spatstat)
+library(raster)
+
+density_df <- data.frame(run_id = NA, x = NA, y = NA, tool_density= NA, source_density=NA, tree_density=NA)
+
+for(i in unique(tools$run_id)){
+  tool <- tools[tools$run_id == i,]
+  source <- sources[sources$run_id == i,]
+  tree <- trees[trees$run_id == i,]
+  
+  
+  tool_ppp <-ppp(tool$x,tool$y, c(0,100), c(0,100))
+  tool_df <- as.data.frame(raster(density.ppp(tool_ppp,sigma = 2)),xy =TRUE)
+  colnames(tool_df) <- c("x", "y", "tool_density")
+  
+  source_ppp <-ppp(source$x,source$y, c(0,100), c(0,100))
+  source_df <- as.data.frame(raster(density.ppp(source_ppp,sigma = 2)),xy = TRUE)
+  
+  tree_ppp<- ppp(tree$x, tree$y, c(0,100), c(0,100))
+  tree_df <- as.data.frame(raster(density.ppp(tree_ppp,sigma = 2)),xy = TRUE)
+  
+  tool_df$source_density <- source_df$layer
+  tool_df$run_id <- i
+  tool_df$tree_density <- tree_df$layer
+  
+  density_df <- rbind(density_df, tool_df)
+  
+}
+
+density_df <- density_df[-1,]
+
+#ggplot(density_df, aes(x = source_density, y = tool_density))+ geom_point()+facet_wrap(~run_id)
+```
+
+
+```{r}
+
+density_df <- left_join(density_df, run_data)
+
+ggplot(density_df, aes(x = source_density, y = tool_density, color =  tool_acq))+ geom_point()+facet_grid(num_sources~num_nutree)
+
+
+summary(lm(tool_density~source_density^2, density_df[density_df$num_nutree== 10 & density_df$num_sources == 30,]))
+```
