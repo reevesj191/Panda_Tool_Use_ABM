@@ -30,9 +30,9 @@ class PrimToolModel(Model):
         self.sql = db_name
 
         create_DB(self.sql)
-        self.conn = connect_db(self.sql)
 
         print("update Run Data table")
+        conn = connect_db(self.sql)
 
         rundat = (self.run_id,
                   self.datetime,
@@ -43,7 +43,7 @@ class PrimToolModel(Model):
                   self.tool_acquistion,
                   self.search_radius)
 
-        add_run_data(self.conn, rundat)
+        add_run_data(conn, rundat)
 
         #create agents
         print("Generating Agents")
@@ -54,7 +54,7 @@ class PrimToolModel(Model):
             self.grid.place_agent(source, (x, y))
             self.schedule.add(source)
             row = [self.run_id, source.unique_id, x, y]
-            add_source_data(self.conn, row)
+            add_source_data(conn, row)
 
         for i in range(self.num_agents):
             primate = PrimAgent(self.next_id(), self)
@@ -73,13 +73,18 @@ class PrimToolModel(Model):
 
     def Growtree(self):
 
-        x = random.randint(1,10000)
-        if x < 1:
-            tree = NutTree(self.next_id(), self, ts_born= self.timestep)
-            x = self.random.randrange(self.grid.width)
-            y = self.random.randrange(self.grid.height)
-            self.grid.place_agent(tree, (x, y))
-            self.schedule.add(tree)
+        tree_list = []
+        for agent in self.schedule.agents:
+            if type(agent) is NutTree:
+                tree_list.append(agent)
+        tree = self.random.choice(tree_list)
+        new_loc = self.grid.get_neighborhood(tree.pos, moore=True, include_center=False, radius= 15)
+        new_loc = self.random.choice(new_loc)
+        new_tree = NutTree(self.next_id(), self, ts_born= self.timestep)
+        self.grid.place_agent(new_tree, new_loc)
+        self.schedule.add(new_tree)
+
+
 
     def step(self):
 
@@ -87,13 +92,17 @@ class PrimToolModel(Model):
         self.schedule.step()
 
         if self.treesdie is True:
-            self.Growtree()
+            x = random.randint(1,10000)
+            if x <= 1:
+                self.Growtree()
+            else:
+                pass
         else:
             pass
 
         if self.timestep == self.max_ts:
             print("Run Finished updating db with tool Data")
-
+            conn = connect_db(self.sql)
             for agent in self.schedule.agents:
 
                 if type(agent) is PoundingTool:
@@ -106,7 +115,7 @@ class PrimToolModel(Model):
                            agent.Tool_size,
                            agent.active]
 
-                    add_tool_data(conn=self.conn, data=row)
+                    add_tool_data(conn=conn, data=row)
             self.running = False
 
         else:

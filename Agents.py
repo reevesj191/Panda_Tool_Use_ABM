@@ -1,6 +1,6 @@
 from mesa import Agent
 from numpy import random
-from abm_functions import  ClosestAgent, get_random_alphanumeric_string, add_tree_data
+from abm_functions import  ClosestAgent, get_random_alphanumeric_string, add_tree_data, connect_db
 
 class PrimAgent(Agent):
 
@@ -111,8 +111,9 @@ class PrimAgent(Agent):
 
             ## Using the stone
 
-            possible_steps = self.model.grid.get_neighborhood(self.NutTreeLoc, moore=True)
-            new_position = self.random.choice(possible_steps)
+            #possible_steps = self.model.grid.get_neighborhood(self.NutTreeLoc, moore=True)
+            #new_position = self.random.choice(possible_steps)
+            new_position = self.NutTreeLoc
             self.model.grid.move_agent(self, new_position)
 
             ### Dropstone
@@ -128,7 +129,7 @@ class PrimAgent(Agent):
 
             #print("this is a previously used stone")
 
-            possible_steps = self.model.grid.get_neighborhood(self.NutTreeLoc, moore=True, include_center= True)
+            possible_steps = self.model.grid.get_neighborhood(self.NutTreeLoc, moore=True, include_center=True)
             new_position = self.random.choice(possible_steps)
             self.model.grid.move_agent(self, new_position)
             #print("moving stone")
@@ -223,7 +224,8 @@ class NutTree(Agent):
                    self.ts_born,
                    self.alive,
                    self.ts_died]
-            add_tree_data(self.model.conn, row)
+            conn = conn = connect_db(self.model.sql)
+            add_tree_data(conn, row)
 
         else:
             pass

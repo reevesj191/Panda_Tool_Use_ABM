@@ -5,18 +5,15 @@ fixed_params = {"width": 500,
                 "height": 500,
                 "Na": 50,
                 "treesdie": True,
+                "max_ts": (10000)
 }
 
 
 variable_params = {
     "Ns": (10, 20, 30, 40),
     "Nn": (10, 20, 30, 40),
-    "tool_acq": ("nearest","random"),
-    "max_ts": (100, 1000)
+    "tool_acq": ("nearest","random")
 }
-
-
-
 
 batch_run = BatchRunner(PrimToolModel,
                         fixed_parameters=fixed_params,
@@ -33,3 +30,4 @@ batch_run.run_all()
 #                              iterations=30)
 #
 # mp_batch_run.run_all()
+
