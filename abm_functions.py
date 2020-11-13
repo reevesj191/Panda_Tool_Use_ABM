@@ -60,7 +60,8 @@ def create_DB(db_file):
                                 run_id text,
                                 id integer,
                                 x integer,
-                                y integer); """
+                                y integer,
+                                rm_quality); """
 
         tree_data_table = """ CREATE TABLE IF NOT EXISTS trees (
                                 run_id text,
@@ -79,7 +80,10 @@ def create_DB(db_file):
                                 x integer,
                                 y integer,
                                 Tool_size text,
-                                active text); """
+                                original_size text,
+                                active text,
+                                rm_quality,
+                                ts_born); """
 
         c.execute(run_data_table)
         c.execute(source_data_table)
@@ -133,9 +137,9 @@ def add_source_data(conn, data):
 
     while a == 0:
         try:
-            sql_run_dat = """ INSERT INTO sources(run_id, id, x, y)
+            sql_run_dat = """ INSERT INTO sources(run_id, id, x, y, rm_quality)
 
-                              VALUES(?,?,?,?)
+                              VALUES(?,?,?,?,?)
 
             """
             conn.execute(sql_run_dat, data)
@@ -177,10 +181,13 @@ def add_tool_data(conn, data):
                                 source_id,
                                 x,
                                 y,
-                                Tool_size,
-                                active)
+                                tool_size,
+                                original_size,
+                                active,
+                                rm_quality,
+                                ts_born)
 
-                              VALUES(?,?,?,?,?,?,?,?)
+                              VALUES(?,?,?,?,?,?,?,?,?,?,?)
 
             """
             conn.execute(sql_run_dat, data)

@@ -1,6 +1,7 @@
 from datetime import datetime
 from Agents import *
 from mesa import Model
+import random as rand
 from mesa.datacollection import DataCollector
 from mesa.time import RandomActivation
 from mesa.space import MultiGrid
@@ -47,14 +48,16 @@ class PrimToolModel(Model):
 
         #create agents
         print("Generating Agents")
+        # Adding Sources
         for i in range(self.num_sources):
-            source = StoneSource(self.next_id(), self)
+            q = rand.choice([0,10,20,30])
+            source = StoneSource(self.next_id(), self, qual=q)
             x = self.random.randrange(self.grid.width)
             y = self.random.randrange(self.grid.height)
             self.grid.place_agent(source, (x, y))
             self.schedule.add(source)
-            row = [self.run_id, source.unique_id, x, y]
-            add_source_data(conn, row)
+            row = [self.run_id, source.unique_id, x, y, source.rm_quality] # Line to be added the SQL-DB
+            add_source_data(conn, row) # Adds source data to SQL DB
 
         for i in range(self.num_agents):
             primate = PrimAgent(self.next_id(), self)
@@ -71,12 +74,11 @@ class PrimToolModel(Model):
             self.schedule.add(tree)
 
 
-    def Growtree(self):
 
-        tree_list = []
-        for agent in self.schedule.agents:
-            if type(agent) is NutTree:
-                tree_list.append(agent)
+
+    def Growtree(self):
+        print("growing Tree")
+        tree_list = [obj for obj in self.schedule.agents if isinstance(obj, NutTree)]
         tree = self.random.choice(tree_list)
         new_loc = self.grid.get_neighborhood(tree.pos, moore=True, include_center=False, radius= 15)
         new_loc = self.random.choice(new_loc)
@@ -90,7 +92,7 @@ class PrimToolModel(Model):
 
         '''Advances the model by one step'''
         self.schedule.step()
-
+        #print(self.timestep)
         if self.treesdie is True:
             x = random.randint(1,10000)
             if x <= 1:
@@ -103,19 +105,35 @@ class PrimToolModel(Model):
         if self.timestep == self.max_ts:
             print("Run Finished updating db with tool Data")
             conn = connect_db(self.sql)
-            for agent in self.schedule.agents:
+            stone_list = [obj for obj in self.schedule.agents if isinstance(obj, PoundingTool)]
 
-                if type(agent) is PoundingTool:
-                    row = [self.run_id,
-                           agent.tool_id,
-                           agent.parent_id,
-                           agent.source_id,
-                           agent.pos[0],
-                           agent.pos[1],
-                           agent.Tool_size,
-                           agent.active]
+            for agent in stone_list:
+                row = [self.run_id,
+                       agent.tool_id,
+                       agent.parent_id,
+                       agent.source_id,
+                       agent.pos[0],
+                       agent.pos[1],
+                       agent.Tool_size,
+                       agent.original_size,
+                       agent.active,
+                       agent.rm_quality,
+                       agent.ts_born]
+                add_tool_data(conn=conn, data=row)
 
-                    add_tool_data(conn=conn, data=row)
+            ### Adding Living Trees
+
+            tree_list = [obj for obj in self.schedule.agents if isinstance(obj, NutTree)]
+            for agent in tree_list:
+                row = [agent.model.run_id,
+                       agent.unique_id,
+                       agent.pos[0], agent.pos[1],
+                       agent.ts_born,
+                       agent.alive,
+                       agent.ts_died]
+                conn = connect_db(self.sql)
+                add_tree_data(conn, row)
+
             self.running = False
 
         else:

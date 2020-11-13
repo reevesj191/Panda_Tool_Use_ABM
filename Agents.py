@@ -4,7 +4,7 @@ from abm_functions import  ClosestAgent, get_random_alphanumeric_string, add_tre
 
 class PrimAgent(Agent):
 
-    '''A stupid monkey that does pounding tool activities'''
+    '''A monkey that does pounding tool activities'''
 
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
@@ -59,7 +59,10 @@ class PrimAgent(Agent):
                                 self,
                                 fragment,
                                 active,
-                                stone.source_id, parent_id=parent_id)
+                                stone.source_id,
+                                parent_id=parent_id,
+                                q=stone.rm_quality,
+                                born=self.model.timestep)
 
         self.model.grid.place_agent(new_tool, self.pos)
         self.model.schedule.add(new_tool)
@@ -112,15 +115,14 @@ class PrimAgent(Agent):
             #print("this is from the source")
             self.StoneLoc = stone.pos
             self.Source_id = stone.unique_id
+            self.rm_qual = stone.rm_quality
 
             while self.Tool_size < 2000:
-                self.Tool_size = random.normal(7400,3900,1)[0]
+                self.Tool_size = random.normal(7400,3900,1)[0] ### Size of the tool is randomly drawn from a normal distribution with the mean and sd of tools found in the Tai forest
 
             self.Has_tool = 1
             self.model.grid.move_agent(self, self.StoneLoc)
-
             # Using the stone
-
             possible_steps = self.model.grid.get_neighborhood(self.NutTreeLoc, moore=True)
             new_position = self.random.choice(possible_steps)
             # new_position = self.NutTreeLoc
@@ -131,8 +133,8 @@ class PrimAgent(Agent):
             size = self.Tool_size
             x, y = self.pos
             source_id = self.Source_id
-
-            tool = PoundingTool(self.model.next_id(), self, tool_size=size, active=True, s_id=source_id)
+            ts = self.model.timestep
+            tool = PoundingTool(self.model.next_id(), self, tool_size=size, active=True, s_id=source_id, q=self.rm_qual,born=ts)
             self.model.grid.place_agent(tool, (x, y))
             self.model.schedule.add(tool)
 
@@ -149,9 +151,9 @@ class PrimAgent(Agent):
             self.model.grid.move_agent(stone, new_position)
             Break_prob = random.randint(1,100)
 
-            if Break_prob <= 25:
+            if Break_prob <= 25 + stone.rm_quality:
 
-                identifier = self.model.next_id()
+                #identifier = self.model.next_id()
                 self.BreakStone(stone)
 
             else:
@@ -209,11 +211,11 @@ class PrimAgent(Agent):
 
 class StoneSource(Agent):
 
-    def __init__(self, unique_id, model):
+    def __init__(self, unique_id, model, qual):
         super().__init__(unique_id, model)
         self.ID = unique_id
         self.active = -1
-        self.rm_quality = random.choice[0,10,20]
+        self.rm_quality = qual
 
 
 class NutTree(Agent):
@@ -227,9 +229,9 @@ class NutTree(Agent):
         self.active = -1
 
     def doIdie(self):
-
+        tree_list = [obj for obj in self.model.schedule.agents if isinstance(obj, NutTree)]
         x = random.randint(1, 10000)
-        if x <= 1:
+        if x<=1 and len(tree_list)>1:
             self.ts_died = self.model.timestep
             self.alive = False
             self.model.grid._remove_agent(self.pos, self)
@@ -241,7 +243,7 @@ class NutTree(Agent):
                    self.ts_born,
                    self.alive,
                    self.ts_died]
-            conn = conn = connect_db(self.model.sql)
+            conn = connect_db(self.model.sql)
             add_tree_data(conn, row)
 
         else:
@@ -257,11 +259,14 @@ class NutTree(Agent):
 
 
 class PoundingTool(Agent):
-    def __init__(self, unique_id, model, tool_size, active, s_id, parent_id="OG"):
+    def __init__(self, unique_id, model, tool_size, active, s_id, parent_id="OG", q=-1, born=-1):
         super().__init__(unique_id, model)
         self.parent_id = parent_id
         self.tool_id = get_random_alphanumeric_string(8)
         self.Tool_size = tool_size
+        self.original_size = tool_size
         self.active = active
         self.source_id = s_id
+        self.rm_quality = q
+        self.ts_born = born
 
