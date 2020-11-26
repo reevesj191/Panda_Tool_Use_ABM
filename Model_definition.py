@@ -125,6 +125,7 @@ class PrimToolModel(Model):
 
             rundat = (self.run_id,
                       self.datetime,
+                      self.max_ts,
                       self.num_agents,
                       self.num_sources,
                       self.num_nuttree,

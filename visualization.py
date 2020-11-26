@@ -66,7 +66,7 @@ server = ModularServer(PrimToolModel,
                         "search_rad": 1,
                         "Ns": 50,
                         "Nn": 500,
-                        "max_ts": 10000,
+                        "max_ts": 10,
                         "width": h, "height": w,
                         "treesdie": True,
                         "db_name": "test.db"})

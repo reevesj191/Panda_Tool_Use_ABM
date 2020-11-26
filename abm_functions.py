@@ -49,6 +49,7 @@ def create_DB(db_file):
         run_data_table = """ CREATE TABLE IF NOT EXISTS run_data (
                                 run_id text PRIMARY KEY,
                                 datetime text,
+                                n_time_steps text,
                                 num_agents integer,
                                 num_sources integer,
                                 num_nutree integer,
@@ -121,10 +122,10 @@ def add_run_data(conn, data):
 
     while a == 0:
         try:
-            sql_run_dat = """ INSERT INTO run_data(run_id, datetime, num_agents, num_sources, num_nutree, treessdie,
+            sql_run_dat = """ INSERT INTO run_data(run_id, datetime, n_time_steps, num_agents, num_sources, num_nutree, treessdie,
             tool_acq, search_rad, tree_deaths)
 
-                              VALUES(?,?,?,?,?,?,?,?,?)
+                              VALUES(?,?,?,?,?,?,?,?,?,?)
             """
 
             conn.execute(sql_run_dat, data)
