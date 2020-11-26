@@ -47,6 +47,7 @@ class PrimAgent(Agent):
         parent_id = stone.tool_id
         if stone.Tool_size < 2000:
             stone.active = False
+            stone.ts_died = self.model.timestep
         else:
             pass
 
@@ -56,7 +57,7 @@ class PrimAgent(Agent):
             active = False
 
         new_tool = PoundingTool(self.model.next_id(),
-                                self,
+                                self.model,
                                 fragment,
                                 active,
                                 stone.source_id,
@@ -125,7 +126,6 @@ class PrimAgent(Agent):
             # Using the stone
             possible_steps = self.model.grid.get_neighborhood(self.NutTreeLoc, moore=True)
             new_position = self.random.choice(possible_steps)
-            # new_position = self.NutTreeLoc
             self.model.grid.move_agent(self, new_position)
 
             # Dropstone
@@ -134,7 +134,8 @@ class PrimAgent(Agent):
             x, y = self.pos
             source_id = self.Source_id
             ts = self.model.timestep
-            tool = PoundingTool(self.model.next_id(), self, tool_size=size, active=True, s_id=source_id, q=self.rm_qual,born=ts)
+            tool = PoundingTool(self.model.next_id(), self.model, tool_size=size, active=True, s_id=source_id, q=self.rm_qual,born=ts)
+            tool.n_uses += 1
             self.model.grid.place_agent(tool, (x, y))
             self.model.schedule.add(tool)
 
@@ -148,6 +149,7 @@ class PrimAgent(Agent):
             #new_position = self.NutTreeLoc
             self.model.grid.move_agent(self, new_position)
             #print("moving stone")
+            stone.n_uses += 1
             self.model.grid.move_agent(stone, new_position)
             Break_prob = random.randint(1,100)
 
@@ -225,38 +227,59 @@ class NutTree(Agent):
         self.ID = unique_id
         self.ts_born = ts_born
         self.ts_died = ts_died
+        self.age = 0
         self.alive = True
         self.active = -1
 
-    def doIdie(self):
-        tree_list = [obj for obj in self.model.schedule.agents if isinstance(obj, NutTree)]
-        x = random.randint(1, 10000)
-        if x<=1 and len(tree_list)>1:
+    def agedieGrow(self):
+
+        self.age += 1
+
+        if self.age == 10000:
+            print('a tree dies')
+             ### Killing Tree
+
             self.ts_died = self.model.timestep
             self.alive = False
-            self.model.grid._remove_agent(self.pos, self)
-            self.model.schedule.remove(self)
 
             row = [self.model.run_id,
                    self.unique_id,
-                   self.pos[0], self.pos[1],
+                   self.pos[0],
+                   self.pos[1],
                    self.ts_born,
                    self.alive,
-                   self.ts_died]
+                   self.ts_died,
+                   self.age]
+
             conn = connect_db(self.model.sql)
             add_tree_data(conn, row)
 
+            ## Growing Tree
+
+            new_loc = self.model.grid.get_neighborhood(self.pos, moore=True, include_center=False, radius=10)
+            new_loc = self.random.choice(new_loc)
+            new_tree = NutTree(self.model.next_id(), self.model, ts_born=self.model.timestep)
+            self.model.grid.place_agent(new_tree, new_loc)
+            self.model.schedule.add(new_tree)
+
+            ## Remove dead Tree from Model
+            self.model.grid.remove_agent(self)
+            self.model.schedule.remove(self)
+            self.model.tree_growth_deaths += 1
+
         else:
             pass
+
+
 
 
     def step(self):
 
-        if self.model.treesdie is True:
-            self.doIdie()
+        if self.model.__getattribute__("treesdie") is True:
+            self.agedieGrow()
+
         else:
             pass
-
 
 class PoundingTool(Agent):
     def __init__(self, unique_id, model, tool_size, active, s_id, parent_id="OG", q=-1, born=-1):
@@ -269,4 +292,6 @@ class PoundingTool(Agent):
         self.source_id = s_id
         self.rm_quality = q
         self.ts_born = born
+        self.ts_died = -1
+        self.n_uses = 0
 

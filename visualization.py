@@ -19,7 +19,7 @@ def agent_portrayal(agent):
         portrayal["Color"] = "Brown"
         portrayal["Shape"] = "circle"
         portrayal["Layer"] = "4"
-        portrayal["r"] = .5
+        portrayal["r"] = 1
 
 
     if type(agent) is StoneSource:
@@ -27,13 +27,14 @@ def agent_portrayal(agent):
         portrayal["Color"] = "grey"
         portrayal["Shape"] = "circle"
         portrayal["Layer"] = "3"
-        portrayal["r"] = .75
+        portrayal["r"] = 1
 
     if type(agent) is NutTree:
 
         portrayal["Color"] = "green"
         portrayal["Shape"] = "circle"
         portrayal["Layer"] = "3"
+        portrayal["r"] = 1
 
     if type(agent) is PoundingTool:
 
@@ -56,19 +57,20 @@ def agent_portrayal(agent):
 
 
 
-grid = CanvasGrid(agent_portrayal, h, w, 750, 750)
+grid = CanvasGrid(agent_portrayal, h, w)
 
 server = ModularServer(PrimToolModel,
                        [grid],
                        "Primate Tool Model",
-                       {"Na": 500,
+                       {"Na": 100,
                         "search_rad": 1,
                         "Ns": 50,
-                        "Nn": 50,
-                        "max_ts": 10,
+                        "Nn": 500,
+                        "max_ts": 10000,
                         "width": h, "height": w,
                         "treesdie": True,
                         "db_name": "test.db"})
+
 server.port = 3456 # The default
 
 server.launch()

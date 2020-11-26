@@ -54,7 +54,8 @@ def create_DB(db_file):
                                 num_nutree integer,
                                 treessdie integer,
                                 tool_acq text,
-                                search_rad integer); """
+                                search_rad integer,
+                                tree_deaths integer); """
 
         source_data_table = """ CREATE TABLE IF NOT EXISTS sources (
                                 run_id text,
@@ -70,7 +71,8 @@ def create_DB(db_file):
                                 y integer,
                                 ts_born text,
                                 alive text,
-                                ts_died text); """
+                                ts_died text,
+                                age text); """
 
         lithic_data_table = """ CREATE TABLE IF NOT EXISTS tools (
                                 run_id text,
@@ -82,8 +84,10 @@ def create_DB(db_file):
                                 Tool_size text,
                                 original_size text,
                                 active text,
-                                rm_quality,
-                                ts_born); """
+                                rm_quality text,
+                                ts_born text,
+                                ts_died text,
+                                n_uses text); """
 
         c.execute(run_data_table)
         c.execute(source_data_table)
@@ -118,11 +122,11 @@ def add_run_data(conn, data):
     while a == 0:
         try:
             sql_run_dat = """ INSERT INTO run_data(run_id, datetime, num_agents, num_sources, num_nutree, treessdie,
-            tool_acq, search_rad)
+            tool_acq, search_rad, tree_deaths)
 
-                              VALUES(?,?,?,?,?,?,?,?)
-
+                              VALUES(?,?,?,?,?,?,?,?,?)
             """
+
             conn.execute(sql_run_dat, data)
             conn.commit()
             a = 1
@@ -156,9 +160,9 @@ def add_tree_data(conn, data):
 
     while a == 0:
         try:
-            sql_run_dat = """ INSERT INTO trees(run_id, id, x, y, ts_born, alive, ts_died)
+            sql_run_dat = """ INSERT INTO trees(run_id, id, x, y, ts_born, alive, ts_died, age)
 
-                              VALUES(?,?,?,?,?,?,?)
+                              VALUES(?,?,?,?,?,?,?,?)
 
             """
             conn.execute(sql_run_dat, data)
@@ -185,9 +189,11 @@ def add_tool_data(conn, data):
                                 original_size,
                                 active,
                                 rm_quality,
-                                ts_born)
+                                ts_born,
+                                ts_died,
+                                n_uses)
 
-                              VALUES(?,?,?,?,?,?,?,?,?,?,?)
+                              VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)
 
             """
             conn.execute(sql_run_dat, data)
