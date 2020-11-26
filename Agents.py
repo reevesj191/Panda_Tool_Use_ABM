@@ -65,6 +65,8 @@ class PrimAgent(Agent):
                                 q=stone.rm_quality,
                                 born=self.model.timestep)
 
+        new_tool.ts_died = self.model.timestep
+
         self.model.grid.place_agent(new_tool, self.pos)
         self.model.schedule.add(new_tool)
 
