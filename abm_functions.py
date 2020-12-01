@@ -10,11 +10,6 @@ def levy_number(l, u):
 
     return(l**(-u))
 
-
-
-
-
-
 ### Agent Functions
 def ClosestAgent(pos, list):
 

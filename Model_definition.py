@@ -1,12 +1,14 @@
+
 from datetime import datetime
 from Agents import *
 from mesa import Model
 import random as rand
-from mesa.datacollection import DataCollector
+import os
 from mesa.time import RandomActivation
 from mesa.space import MultiGrid
 from numpy import random
 from abm_functions import create_DB, add_run_data, add_source_data, add_tree_data, add_tool_data, connect_db
+
 
 
 
@@ -22,7 +24,9 @@ class PrimToolModel(Model):
         self.max_ts = max_ts
         self.tool_acquistion = tool_acq
         self.search_radius = search_rad
-        self.sql = db_name
+        self.exp_name = db_name
+        self.runs_path = "%s_iterations" % self.exp_name
+        self.sql = os.path.join(self.runs_path, self.run_id)
 
         ### Space, Scheduling
         self.schedule = RandomActivation(self)
@@ -34,10 +38,13 @@ class PrimToolModel(Model):
         self.tree_growth_deaths = 0
         self.running = True
 
-
+        if not os.path.exists(self.runs_path):
+            os.mkdir(self.runs_path)
+            
         create_DB(self.sql)
+
         #create agents
-        print("Generating Agents")
+
         conn = connect_db(self.sql)
         # Adding Sources
         for i in range(self.num_sources):
@@ -65,54 +72,10 @@ class PrimToolModel(Model):
             self.grid.place_agent(tree, (x, y))
             self.schedule.add(tree)
 
-
-    # def KillTreeGrowTree(self):
-    #     print("growing Tree")
-    #     tree_list = [obj for obj in self.schedule.agents if isinstance(obj, NutTree)]
-    #     tree = self.random.choice(tree_list)
-    #     ### Killing Tree
-    #     tree.ts_died = self.timestep
-    #     tree.alive = False
-    #     row = [self.run_id,
-    #            tree.unique_id,
-    #            tree.pos[0],
-    #            tree.pos[1],
-    #            tree.ts_born,
-    #            tree.alive,
-    #            tree.ts_died]
-    #
-    #     conn = connect_db(self.sql)
-    #     add_tree_data(conn, row)
-    #
-    #     ## Grow Tree
-    #     new_loc = self.grid.get_neighborhood(tree.pos, moore=True, include_center=False, radius=10)
-    #     new_loc = self.random.choice(new_loc)
-    #     new_tree = NutTree(self.next_id(), self, ts_born= self.timestep)
-    #     self.grid.place_agent(new_tree, new_loc)
-    #     self.schedule.add(new_tree)
-    #
-    #     ## Remove dead Tree from Model
-    #     self.grid.remove_agent(tree)
-    #     self.schedule.remove(tree)
-    #
-    #     ## Updata Tree death attribute
-    #
-    #     self.tree_growth_deaths += 1
-
     def step(self):
 
         '''Advances the model by one step'''
         self.schedule.step()
-
-        #print(self.timestep)
-        # if self.treesdie is True:
-        #     x = random.randint(1,10000)
-        #     if x <= 1:
-        #         self.KillTreeGrowTree()
-        #     else:
-        #         pass
-        # else:
-        #     pass
 
         if self.timestep == self.max_ts:
             print("Run Finished updating db with tool Data")
