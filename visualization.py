@@ -69,8 +69,8 @@ server = ModularServer(PrimToolModel,
                         "max_ts": 10,
                         "width": h, "height": w,
                         "treesdie": True,
-                        "db_name": "test.db"})
+                        "db_name": "test2.db"})
 
-server.port = 3456 # The default
+server.port = 1234 # The default
 
 server.launch()

@@ -40,7 +40,7 @@ class PrimToolModel(Model):
 
         if not os.path.exists(self.runs_path):
             os.mkdir(self.runs_path)
-            
+
         create_DB(self.sql)
 
         #create agents

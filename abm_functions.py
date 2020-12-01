@@ -199,3 +199,12 @@ def add_tool_data(conn, data):
         except sqlite3.Error as e:
             print(e)
             print("trying again")
+
+def select_table(conn, table):
+
+    cursor = conn.cursor()
+    sql = """ SELECT * FROM %s """ % table
+    cursor.execute(sql)
+    records = cursor.fetchall()
+    return(records)
+
