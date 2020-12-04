@@ -115,7 +115,7 @@ class PrimToolModel(Model):
                        agent.ts_born,
                        agent.ts_died,
                        agent.n_uses]
-                add_tool_data(conn=conn, data=row)
+                add_tool_data(conn=conn, data=row, commit_now=False)
 
             ### Adding Living Trees
 
@@ -129,8 +129,9 @@ class PrimToolModel(Model):
                        agent.ts_died,
                        agent.age]
                 conn = connect_db(self.sql)
-                add_tree_data(conn, row)
+                add_tree_data(conn, row, commit_now=False)
 
+            conn.commit()
             self.running = False
 
         else:

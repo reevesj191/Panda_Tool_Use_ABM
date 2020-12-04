@@ -132,7 +132,7 @@ def add_run_data(conn, data):
             print("trying again")
 
 
-def add_source_data(conn, data):
+def add_source_data(conn, data, commit_now=True):
     a = 0
 
     while a == 0:
@@ -143,7 +143,10 @@ def add_source_data(conn, data):
 
             """
             conn.execute(sql_run_dat, data)
-            conn.commit()
+            if commit_now is True:
+                conn.commit()
+            else:
+                pass
             a = 1
 
         except sqlite3.Error as e:
@@ -151,7 +154,7 @@ def add_source_data(conn, data):
             print("trying again")
 
 
-def add_tree_data(conn, data):
+def add_tree_data(conn, data, commit_now=True):
     a = 0
 
     while a == 0:
@@ -162,14 +165,18 @@ def add_tree_data(conn, data):
 
             """
             conn.execute(sql_run_dat, data)
-            conn.commit()
+            if commit_now is True:
+                conn.commit()
+            else:
+                pass
+
             a = 1
 
         except sqlite3.Error as e:
             print(e)
             print("trying again")
 
-def add_tool_data(conn, data):
+def add_tool_data(conn, data, commit_now=True):
     a = 0
 
     while a == 0:
@@ -193,7 +200,10 @@ def add_tool_data(conn, data):
 
             """
             conn.execute(sql_run_dat, data)
-            conn.commit()
+            if commit_now is True:
+                conn.commit()
+            else:
+                pass
             a = 1
 
         except sqlite3.Error as e:
