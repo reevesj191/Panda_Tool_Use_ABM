@@ -2,7 +2,7 @@ import os
 from abm_functions import create_DB, select_table, add_run_data, add_source_data, add_tree_data, add_tool_data, connect_db
 
 
-pathway = "Experiment_1_25k_50k_iterations"
+pathway = "Panda_ABM_Experiment_1_25k_50k_iterations"
 db_name = "master"
 db_path = os.path.join(pathway,db_name)
 
@@ -12,10 +12,13 @@ if not os.path.exists(db_path):
 
 runs = os.listdir(pathway)
 runs.remove(db_name)
+runs.remove('.DS_Store')
+
 
 master_conn = connect_db(db_path)
 
 for run in runs:
+    print(run)
     run_path = os.path.join(pathway, run)
     run_conn = connect_db(run_path)
 

@@ -238,7 +238,7 @@ class NutTree(Agent):
         self.age += 1
 
         if self.age == 10000:
-            print('a tree dies')
+            #print('a tree dies')
              ### Killing Tree
 
             self.ts_died = self.model.timestep

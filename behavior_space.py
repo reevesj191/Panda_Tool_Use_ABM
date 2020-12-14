@@ -1,18 +1,18 @@
 from Model_definition import *
 from mesa.batchrunner import BatchRunner, BatchRunnerMP
 
-fixed_params = {"width": 100,
-                "height":  100,
+fixed_params = {"width": 250,
+                "height":  250,
                 "Na": 100,
                 "max_ts": 100000,
                 "tool_acq": "nearest",
-                "db_name": "Experiment_1"
+                "db_name": "Experiment_2"
 }
 
 variable_params = {
-    "Nn": (100, 150, 300, 400, 500, 1000),
-    "Ns": (10, 30, 50, 100, 200, 300, 500),
-    "max_ts": (50000, 100000, 500000),
+    "Nn": (100, 500, 1000, 2000),
+    "Ns": (10, 100, 500, 1000),
+    "max_ts": (25000, 50000, 75000),
     "treesdie":(True, False),
 }
 

@@ -48,7 +48,7 @@ class PrimToolModel(Model):
         conn = connect_db(self.sql)
         # Adding Sources
         for i in range(self.num_sources):
-            q = rand.choice([0,10,20,30])
+            q = rand.choice([0,25,50,75])
             source = StoneSource(self.next_id(), self, qual=q)
             x = self.random.randrange(self.grid.width)
             y = self.random.randrange(self.grid.height)
