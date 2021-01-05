@@ -10,3 +10,4 @@ Data
 .DS_Store
 Panda_ABM_Experiment_1_25k_50k_iterations/master
 *.csv
+.RDataTmp

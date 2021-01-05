@@ -23,10 +23,10 @@ knitr::opts_chunk$set(
   comment = FALSE,
   warning = FALSE)
 
-run_data <- fread("EXP_1_25k_run_data.csv")
-sources <- fread("EXP_1_25K_sources.csv")
-trees <- fread("EXP_1_25K_trees.csv")
-tools <- fread("EXP_1_25k_tools.csv")
+run_data <- fread("EXP_1_50k_run_data.csv")
+sources <- fread("EXP_1_50K_sources.csv")
+trees <- fread("EXP_1_50K_trees.csv")
+tools <- fread("EXP_1_50k_tools.csv")
 OGs <- subset(tools, Tool_size >= 2000)
 ```
 
@@ -272,7 +272,7 @@ ggplot(site_sum, aes(x = as.factor(num_nutree), y = mean_size, fill = as.factor(
 
 OGs <- left_join(OGs, run_data)
 
-ggplot(OGs, aes(x = as.factor(num_nutree), y = Tool_size, fill = as.factor(num_sources)))+
+ggplot(OGs[OGs$treessdie == 1,], aes(x = as.factor(num_nutree), y = Tool_size, fill = as.factor(num_sources)))+
   geom_boxplot()+ 
   geom_hline(yintercept = 2000)+
   theme(legend.position = "top")
@@ -302,14 +302,14 @@ OGs <- subset(tools, parent_id == "OG")
 OGs$mass_lost <- OGs$original_size - OGs$Tool_size
 OGs$per_mass_lost <- OGs$mass_lost/OGs$original_size
 
-a <- ggplot(OGs[OGs$num_sources == 10 & OGs$num_nutree == 300,], aes(x = d2source, y = as.numeric(n_uses), color = as.factor(treessdie)))+ 
+a <- ggplot(OGs[OGs$num_sources == 10 & OGs$num_nutree == 1000,], aes(x = d2source, y = as.numeric(n_uses), color = as.factor(treessdie)))+ 
   geom_point() 
   
 
-b <- ggplot(OGs[OGs$num_sources == 10 & OGs$num_nutree == 300,], aes(x = d2source, y = Tool_size, color = ts_born))+
+b <- ggplot(OGs[OGs$num_sources == 10 & OGs$num_nutree == 1000,], aes(x = d2source, y = Tool_size, color = ts_born))+
   geom_point()
 
-c <- ggplot(OGs[OGs$num_sources == 10 & OGs$num_nutree == 300,], aes(x = d2source, y = per_mass_lost, color = as.factor(rm_quality)))+
+c <- ggplot(OGs[OGs$num_sources == 10 & OGs$num_nutree == 1000,], aes(x = d2source, y = per_mass_lost, color = as.factor(rm_quality)))+
   geom_point()
   
 grid.arrange(a,b,c, ncol=1)
