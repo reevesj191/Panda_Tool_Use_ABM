@@ -6,7 +6,7 @@ fixed_params = {"width": 250,
                 "Na": 100,
                 "max_ts": 100000,
                 "tool_acq": "nearest",
-                "db_name": "Experiment_2"
+                "db_name": "Experiment_3"
 }
 
 variable_params = {
@@ -37,7 +37,7 @@ variable_params = {
 # batch_run = BatchRunner(PrimToolModel,
 #                         fixed_parameters=fixed_params,
 #                         variable_parameters=variable_params,
-#                         iterations=30,
+#                         iterations=1,
 #                         max_steps=1000000001)
 #
 # batch_run.run_all()
@@ -46,7 +46,7 @@ mp_batch_run = BatchRunnerMP(model_cls=PrimToolModel,
                               nr_processes=70,
                               variable_parameters=variable_params,
                               fixed_parameters=fixed_params,
-                              iterations=30,
+                              iterations=1,
                               max_steps=1000000000001)
 
 mp_batch_run.run_all()

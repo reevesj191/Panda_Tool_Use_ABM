@@ -3,8 +3,8 @@ from mesa.visualization.modules import CanvasGrid
 from mesa.visualization.ModularVisualization import ModularServer
 
 
-h = 100
-w = 100
+h = 6
+w = 6
 
 def agent_portrayal(agent):
 
@@ -62,14 +62,15 @@ grid = CanvasGrid(agent_portrayal, h, w)
 server = ModularServer(PrimToolModel,
                        [grid],
                        "Primate Tool Model",
-                       {"Na": 100,
+                       {"Na": 1,
                         "search_rad": 1,
-                        "Ns": 50,
-                        "Nn": 500,
-                        "max_ts": 10,
+                        "Ns": 1,
+                        "Nn": 1,
+                        "tool_acq": "nearest",
+                        "max_ts": 1000000000,
                         "width": h, "height": w,
                         "treesdie": True,
-                        "db_name": "test2.db"})
+                        "db_name": "delete.db"})
 
 server.port = 1234 # The default
 

@@ -11,12 +11,19 @@ def levy_number(l, u):
     return(l**(-u))
 
 ### Agent Functions
-def ClosestAgent(pos, list):
 
+def ClosestAgent(pos, list):
+    """
+
+    :param pos: Current position of the Agent
+    :param list: A list of agents with location whose distance from pos will be calculated
+    :return: returns the index position of the object with the closest distance in the list.
+    """
     pos_dists = []
 
 
     x1, y1 = pos
+
 
     for agent in list:
         x2, y2 = agent.pos
