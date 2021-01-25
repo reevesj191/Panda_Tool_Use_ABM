@@ -122,7 +122,7 @@ class PrimToolModel(Model):
                       self.tool_acquistion,
                       self.search_radius,
                       self.tree_growth_deaths)
-
+            print(type(rundat))
             add_run_data(conn, rundat)
 
             stone_list = [obj for obj in self.schedule.agents if isinstance(obj, PoundingTool)]
@@ -161,12 +161,14 @@ class PrimToolModel(Model):
             self.running = False
 
             environment_data = self.tree_datacollector.get_model_vars_dataframe()
-            print(environment_data)
+
+            conn = connect_db(self.sql)
             for index, row in environment_data.iterrows():
 
-                sql_row = [row['Trees Available'], row['Trees Near Sources'], row['Trees Near Pounding Tools']]
-                print(sql_row)
-                conn = connect_db(self.sql)
+                a = int(row['Trees Available'])
+                b = int(row['Trees Near Sources'])
+                c = int(row['Trees Near Pounding Tools'])
+                sql_row = [a,b,c]
                 add_env_data(conn, sql_row, commit_now=False)
 
             conn.commit()

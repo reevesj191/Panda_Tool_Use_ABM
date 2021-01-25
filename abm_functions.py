@@ -93,9 +93,9 @@ def create_DB(db_file):
                                 n_uses text); """
 
         environment_table = """ CREATE TABLE IF NOT EXISTS environment (
-                                trees_available integer,
-                                trees_near_sources integer,
-                                trees_near_pounding_tools integer);
+                                trees_available text,
+                                trees_near_sources text,
+                                trees_near_pounding_tools text);
                                 """
 
         c.execute(run_data_table)
