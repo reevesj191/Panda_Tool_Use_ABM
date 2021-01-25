@@ -28,7 +28,7 @@ class PrimAgent(Agent):
                                                         radius=1,
                                                         moore=True,
                                                         include_center=True) ## Returns a list of grid cells neighboring the agent
-        print(neighborhood)
+        # print(neighborhood) # Debugging
         neighborhood = self.model.grid.get_cell_list_contents(neighborhood) ## Returns a list of objects that are in the cells in the neighborhood
         trees = [obj for obj in neighborhood if isinstance(obj, NutTree)] ## Subsets the list object to those only of the nutree class
 
@@ -145,7 +145,6 @@ class PrimAgent(Agent):
                                                              # located closest to the PrimAgents
 
             stone = stone_list[nearest] # Uses indexing to select the closest stone/source
-            print(stone)
         else:
             pass
 
@@ -310,7 +309,38 @@ class NutTree(Agent):
         self.ts_died = ts_died # The time step at which a tree is removed from the model.
         self.age = 0 #How the tree is
         self.alive = True # For debugging
+        self.available = 0 # determines whether or not a pounding tool or source is within a 3 grid-cell radius.
+        self.near_source = 0
+        self.near_pounding = 0
         self.active = -1 # For debugging
+
+
+    def amIavailable(self):
+
+        neighborhood = self.model.grid.get_neighborhood(self.pos, radius= 3, moore=True)  # Defines the
+        # neighborhood around the agent
+        neighborhood = self.model.grid.get_cell_list_contents(
+            neighborhood)  # Returns a list of the objects in the neighborhood
+
+        # Subsets out all of the stone sources and pounding tools. This way tree agents are not accidentally selected
+        # as stones.
+        sources = [obj for obj in neighborhood if isinstance(obj, StoneSource)]
+        pounding_tools = [obj for obj in neighborhood if isinstance(obj, PoundingTool)] # Subsets out stones
+
+        if len(sources) or len(pounding_tools) > 0:
+            self.available = 1
+
+            if(len(sources) > 0):
+                self.near_source = 1
+            else:
+                self.near_source = 0
+            if(len(pounding_tools) > 0):
+                self.near_pounding = 1
+            else:
+                self.near_pounding = 0
+
+        else:
+            self.available = 0
 
     def agedieGrow(self):
 
@@ -376,6 +406,7 @@ class NutTree(Agent):
 
     def step(self):
         # Trees only age die and grow if the global variable treesdie is True.
+        self.amIavailable()
         if self.model.__getattribute__("treesdie") is True:
             self.agedieGrow()
 

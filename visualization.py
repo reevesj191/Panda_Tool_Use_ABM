@@ -1,10 +1,9 @@
 from Model_definition import *
-from mesa.visualization.modules import CanvasGrid
+from mesa.visualization.modules import CanvasGrid, ChartModule
 from mesa.visualization.ModularVisualization import ModularServer
 
-
-h = 6
-w = 6
+h = 250
+w = 250
 
 def agent_portrayal(agent):
 
@@ -59,13 +58,29 @@ def agent_portrayal(agent):
 
 grid = CanvasGrid(agent_portrayal, h, w)
 
+chart = ChartModule([{"Label": "Trees Available",
+                     "Color": "Black"}],
+                    data_collector_name= 'tree_datacollector')
+
+chart2 = ChartModule([{"Label": "Trees Near Sources",
+                     "Color": "Grey"}],
+                    data_collector_name= 'tree_datacollector')
+
+chart3 = ChartModule([{"Label": "Trees Near Pounding Tools",
+                     "Color": "Grey"}],
+                    data_collector_name= 'tree_datacollector')
+
+
+
+
+
 server = ModularServer(PrimToolModel,
-                       [grid],
+                       [chart, chart2, chart3],
                        "Primate Tool Model",
-                       {"Na": 1,
-                        "search_rad": 1,
-                        "Ns": 1,
-                        "Nn": 1,
+                       {"Na": 200,
+                        "search_rad": 2,
+                        "Ns": 10,
+                        "Nn": 2000,
                         "tool_acq": "nearest",
                         "max_ts": 1000000000,
                         "width": h, "height": w,

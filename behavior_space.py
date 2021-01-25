@@ -1,12 +1,12 @@
 from Model_definition import *
-from mesa.batchrunner import BatchRunner, BatchRunnerMP
+from mesa.batchrunner import BatchRunnerMP
 
 fixed_params = {"width": 250,
                 "height":  250,
                 "Na": 100,
                 "max_ts": 100000,
                 "tool_acq": "nearest",
-                "db_name": "Experiment_3"
+                "db_name": "Experiment_4"
 }
 
 variable_params = {
@@ -42,12 +42,14 @@ variable_params = {
 #
 # batch_run.run_all()
 
-mp_batch_run = BatchRunnerMP(model_cls=PrimToolModel,
-                              nr_processes=70,
+if __name__ == '__main__':
+
+    mp_batch_run = BatchRunnerMP(model_cls=PrimToolModel,
+                                 nr_processes=7,
                               variable_parameters=variable_params,
                               fixed_parameters=fixed_params,
-                              iterations=1,
-                              max_steps=1000000000001)
+                              iterations=30,
+                              max_steps=10000000000)
 
-mp_batch_run.run_all()
+    mp_batch_run.run_all()
 

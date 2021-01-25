@@ -6,9 +6,25 @@ import random as rand
 import os
 from mesa.time import RandomActivation
 from mesa.space import MultiGrid
+from mesa.datacollection import DataCollector
 from numpy import random
 from abm_functions import create_DB, add_run_data, add_source_data, add_tree_data, add_tool_data, connect_db
 
+
+def compute_trees_available(model):
+
+    trees = [obj.available for obj in model.schedule.agents if isinstance(obj,NutTree)]
+    return sum(trees)
+
+def compute_trees_near_source(model):
+
+    trees = [obj.near_source for obj in model.schedule.agents if isinstance(obj,NutTree)]
+    return sum(trees)
+
+def compute_trees_near_pounding_tool(model):
+
+    trees = [obj.near_pounding for obj in model.schedule.agents if isinstance(obj,NutTree)]
+    return sum(trees)
 
 
 
@@ -72,8 +88,18 @@ class PrimToolModel(Model):
             self.grid.place_agent(tree, (x, y))
             self.schedule.add(tree)
 
-    def step(self):
+        ### Data Collection
 
+        self.tree_datacollector = DataCollector(
+            model_reporters={"Trees Available": compute_trees_available,
+                             "Trees Near Sources": compute_trees_near_source,
+                             "Trees Near Pounding Tools":compute_trees_near_pounding_tool}
+
+        )
+
+
+    def step(self):
+        self.tree_datacollector.collect(self)
         '''Advances the model by one step'''
         self.schedule.step()
 
