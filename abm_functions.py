@@ -92,10 +92,17 @@ def create_DB(db_file):
                                 ts_died text,
                                 n_uses text); """
 
+        environment_table = """ CREATE TABLE IF NOT EXISTS environment (
+                                trees_available integer,
+                                trees_near_sources integer,
+                                trees_near_pounding_tools integer);
+                                """
+
         c.execute(run_data_table)
         c.execute(source_data_table)
         c.execute(lithic_data_table)
         c.execute(tree_data_table)
+        c.execute(environment_table)
 
 
 
@@ -216,6 +223,31 @@ def add_tool_data(conn, data, commit_now=True):
         except sqlite3.Error as e:
             print(e)
             print("trying again")
+
+def add_env_data(conn, data, commit_now=True):
+    a = 0
+
+    while a == 0:
+        try:
+            sql_run_dat = """ INSERT INTO environment(
+                                trees_available,
+                                trees_near_sources,
+                                trees_near_pounding_tools)
+                              
+                              VALUES(?,?,?)
+            """
+            conn.execute(sql_run_dat, data)
+            if commit_now is True:
+                conn.commit()
+            else:
+                pass
+            a = 1
+
+        except sqlite3.Error as e:
+            print(e)
+            print("trying again")
+
+
 
 def select_table(conn, table):
 

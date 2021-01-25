@@ -8,7 +8,7 @@ from mesa.time import RandomActivation
 from mesa.space import MultiGrid
 from mesa.datacollection import DataCollector
 from numpy import random
-from abm_functions import create_DB, add_run_data, add_source_data, add_tree_data, add_tool_data, connect_db
+from abm_functions import create_DB, add_run_data, add_source_data, add_tree_data, add_tool_data, add_env_data, connect_db
 
 
 def compute_trees_available(model):
@@ -160,6 +160,16 @@ class PrimToolModel(Model):
             conn.commit()
             self.running = False
 
+            environment_data = self.tree_datacollector.get_model_vars_dataframe()
+            print(environment_data)
+            for index, row in environment_data.iterrows():
+
+                sql_row = [row['Trees Available'], row['Trees Near Sources'], row['Trees Near Pounding Tools']]
+                print(sql_row)
+                conn = connect_db(self.sql)
+                add_env_data(conn, sql_row, commit_now=False)
+
+            conn.commit()
         else:
             pass
 

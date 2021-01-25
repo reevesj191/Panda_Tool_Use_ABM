@@ -42,14 +42,14 @@ variable_params = {
 #
 # batch_run.run_all()
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
 
-    mp_batch_run = BatchRunnerMP(model_cls=PrimToolModel,
-                                 nr_processes=7,
-                              variable_parameters=variable_params,
-                              fixed_parameters=fixed_params,
-                              iterations=30,
-                              max_steps=10000000000)
+mp_batch_run = BatchRunnerMP(model_cls=PrimToolModel,
+                             nr_processes=7,
+                             variable_parameters=variable_params,
+                             fixed_parameters=fixed_params,
+                             iterations=1,
+                             max_steps=10000000000)
 
-    mp_batch_run.run_all()
+mp_batch_run.run_all()
 
