@@ -2,7 +2,7 @@ import os
 from abm_functions import create_DB, select_table, add_run_data, add_source_data,\
     add_tree_data, add_tool_data, add_env_data, connect_db
 
-pathway = "C:/Users/jonathan_reeves/Documents/GitHub/Panda_Tool_Use_ABM/Model/Experiment_14_pounding_tool_priority_iterations"
+pathway = "C:/Users/jonathan_reeves/Documents/GitHub/Panda_Tool_Use_ABM/Model/Experiment_PNAS_iterations/"
 db_name = "0000_Run_Compiled"
 db_path = os.path.join(pathway,db_name)
 

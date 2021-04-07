@@ -1,0 +1,222 @@
+---
+title: "Reeves et al SOM Figures"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      messages = FALSE,
+                      dev = "png" )
+library(DBI)
+library(dplyr)
+library(dbplyr)
+library(ggplot2)
+library(tidyr)
+library(data.table)
+library(gridExtra)
+library(dbplyr)
+library(knitr)
+
+run_data <- fread("Data/EXP_12_Mem_Safe_Run_Data.csv")
+
+OGs <- fread("Data/EXP12_Mem_Safe_All_OG.csv")
+sources <- fread("Data/EXP12_MemSafe_All_sources.csv")
+OGs <- left_join(OGs, run_data)
+OGs_75k <- subset(OGs, n_time_steps == 75000)
+
+
+sources$s_id <- paste(sources$run_id, sources$id)
+OGs_75k$s_id <- paste(OGs_75k$run_id, OGs_75k$source_id)
+source_join <- sources[,c("s_id", "x", "y")]
+colnames(source_join) <- c("s_id", "s_x", "s_y")
+OGs_75k <- left_join(OGs_75k, source_join, by = c("s_id" = "s_id"))
+OGs_75k$d2source <- sqrt(((OGs_75k$x-OGs_75k$s_x)^2) + ((OGs_75k$y-OGs_75k$s_y)^2))
+
+
+OGs_75k_sum <- OGs_75k %>% 
+  group_by(num_sources, num_nutree, rm_quality) %>% 
+  summarise(mean_uses = mean(n_uses),
+            max_uses = max(n_uses),
+            max_d2_source = max(d2source))
+
+base_theme <- theme(panel.background = element_rect(color = "black", 
+                                                    fill = "white"))
+
+```
+
+
+
+```{r echo=FALSE, warning=FALSE, message= FALSE, fig.width=6}
+
+run_sum <- run_data[run_data$n_trees_available_start == 0,] %>%
+  group_by(num_sources, num_nutree, treessdie) %>%
+  summarise(N = n())
+nruns_notools <- nrow(run_data[run_data$n_trees_available_start == 0,])/nrow(run_data)
+
+kable(run_sum, caption = "Runs where no tool use events occurred. Note that the majority of runs that did not faciliate tool use are runs with only 100 Trees \\label{no_events}", col.names = c("Number of Sources", "Number of Trees", "Trees Die", "Number of Runs"))
+
+```
+
+
+
+```{r SOM Table 3, echo=FALSE, warning=FALSE, message= FALSE}
+
+kable(OGs_75k_sum, 
+      caption = "A summary of number of uses by raw material quality",
+      col.names = c("Number of Sources", 
+                    "Number of Trees", 
+                    "Material Quality",
+                    "Mean N Uses",
+                    "Max N Uses",
+                    "Max Distance to Source"))
+```
+
+
+```{r echo=FALSE, warning=FALSE, message= FALSE}
+
+run_data$new_trees <- run_data$n_trees_available_end - run_data$n_trees_available_start
+run_sum <- run_data[run_data$new_trees <= 0] %>%
+  group_by(num_sources, num_nutree, treessdie) %>%
+  summarise(N = n())
+
+nruns_notools <- nrow(run_data[run_data$n_trees_available_start == 0,])/nrow(run_data)
+
+kable(run_sum, 
+      caption = "Runs where the repeated transport of tools did not result in the increased availability of trees",
+      col.names = c("Number of Sources", "Number of Trees", "Trees Die", "Number of Runs"))
+```
+
+
+```{r SOM Figure 1, fig.cap= "The relationship between the number of places where it is possible for a nut-cracking event to occur and the number of trees and sources in the model run. Increasing both the number of trees and sources included in the model run has a positive effect on the number of places where nut-cracking events can occur. Note that the Y axis is in log 10 scale"}
+
+ggplot(run_data, aes(x = as.factor(num_sources), y = n_trees_available_start, fill = as.factor(num_nutree)))+
+  geom_boxplot()+
+  labs(x = "Number of Trees",
+       y = "Number of Trees where tool use can occur",
+       fill = "Number of sources")+
+  scale_y_log10()+
+  scale_fill_brewer(palette = "Greys")+
+  theme(panel.background = element_rect(color = "black", fill = "white"),
+        legend.position = "top")
+
+
+results <- anova(lm(n_trees_available_start~num_nutree + num_sources, data = run_data))
+
+```
+
+
+```{r echo=FALSE, warning=FALSE, message= FALSE, fig.height=4, fig.width=6.5, fig.cap=" Both plots showing the maximum distance a _Pounding Tools_ were moved according to their material quality. When the number of Trees is low, material quality has little influence on the maximum distance a _Pounding Tools_ travel, this is due to the fact that there is little opportunity for tools to move substantial distances from their sources. However, as the number of _Trees_ increases, so does the distance _Pounding Tools_ can move from their _Source_. In cases where the number of _Trees_ is great, the maximum distance tools can move is influenced by its raw material quality. Note that a raw material quality of 0 reflects 25% chance of breaking whereas a raw material quanlity of 75 represents a 100% change of breaking."}
+
+OGs_75k_sum <- OGs_75k %>% 
+  group_by(run_id, num_sources, num_nutree, rm_quality) %>% 
+  summarise(min_uses = min(n_uses),
+            mean_uses = mean(n_uses),
+            max_uses = max(n_uses),
+            max_d2_source = max(d2source))
+
+OGs_75k_sum <- left_join(OGs_75k_sum, run_data)
+
+ggplot(OGs_75k_sum, aes(x = as.factor(rm_quality), y = max_d2_source)) + 
+  geom_boxplot()+
+  labs(x = "Material Quality", y= "Max Distance to Source")+
+  facet_grid(num_sources~num_nutree)+
+  theme(panel.background = element_rect(color = "black", fill = "white"))
+
+```
+
+
+```{r Tree Growth and Death SOM, echo=FALSE, warning=FALSE, message= FALSE, fig.height=4, fig.width=6.5, fig.cap= "The effect tree death and growth on the maximum distance tools can move from the source. When holding the number of _Trees_ and _Sources_ constant _Pounding Tools_ the maximum distance a pounding tool can move is greater when _Trees_ are able to change their location due to death and regrowth."}
+ 
+key <- c("No", "Yes")
+
+ggplot(OGs_75k_sum, aes(x = as.factor(num_sources), y = max_d2_source, fill = as.factor(treessdie))) + 
+  geom_boxplot()+
+  scale_fill_grey(labels = key)+
+  labs(x = " Number of Sources", y = "Max Distance to Source", fill = "Trees Die")+
+  facet_grid(~num_nutree)+
+  base_theme +
+  theme(legend.position = "top")
+
+```
+
+
+```{r, echo=FALSE, warning=FALSE, message= FALSE, fig.height=4, fig.width=6.5, fig.cap= "The effect tree death and growth on the number of trees that become accessible due to the transport of tools"}
+
+
+ ggplot(run_data[run_data$n_time_steps == "75000",], aes(x = as.factor(num_sources), y = n_trees_available_end, color= as.factor(treessdie), fill = as.factor(treessdie))) +
+  geom_boxplot()+
+  scale_fill_grey(labels = key)+
+  scale_color_grey(labels = key)+
+  facet_grid(~num_nutree)+
+  labs(x = "Number of Sources", y = "Number of newly available trees", color = "Trees Die", fill = "Trees Die")+
+  base_theme + 
+  theme(legend.position = "top")
+```
+
+
+```{r echo=FALSE, warning=FALSE, message= FALSE}
+
+tools25k <- fread("Data/EXP12_MemSafe_tools_75k.csv")
+
+tools25k$s_id <- paste(tools25k$run_id, tools25k$source_id)
+source_join <- sources[,c("s_id", "x", "y")]
+colnames(source_join) <- c("s_id", "s_x", "s_y")
+tools25k <- left_join(tools25k, source_join, by = c("s_id" = "s_id"))
+tools25k$d2source <- sqrt(((tools25k$x-tools25k$s_x)^2) + ((tools25k$y-tools25k$s_y)^2))
+
+tools25k_sum <- tools25k %>% 
+  group_by(run_id, x, y) %>%
+  summarise(n_tools = n(),
+            min_d2_source = min(d2source),
+            n_pounding = sum(Tool_size >=2000))
+
+
+tools25k_sum <- left_join(tools25k_sum, run_data)
+
+Tool_sum_sub <- subset(tools25k_sum, num_sources == 100 & num_nutree == 2000 & treessdie == 1)
+
+OGs_sum <- OGs_75k %>% group_by(run_id, x, y) %>%
+  summarise(n_hammers = n(),
+            min_d2_source = min(d2source),
+            med_d2_source = median(d2source),
+            max_d2_source = max(d2source),
+            mean_uses = mean(n_uses))
+
+```
+
+
+```{r echo=FALSE, warning=FALSE, message= FALSE, fig.height=6, fig.width=6, fig.cap= "The relationship between the number of artifacts found in a grid cell and its distance to the nearest source. Note how the number of _Trees_ attenuates the scale and strength of the distance decay relationship"}
+
+ggplot(tools25k_sum[tools25k_sum$treessdie == 1,], aes(x = min_d2_source, y= n_tools)) + 
+  geom_point() +
+  labs(x = "Minimum Distance to Source",
+       y = "Number of Artifacts") + 
+  facet_grid(as.factor(num_sources)~as.factor(num_nutree))+
+  base_theme
+
+```
+
+
+```{r echo=FALSE, warning=FALSE, message= FALSE, fig.height=6, fig.width=6,fig.cap= "The relationship between the number of Pounding Tools found in a grid cell and its distance to the nearest source. Note how the number of _Trees_ attenuates the scale and strength of this relationship"}
+
+OGs_sum <- left_join(OGs_sum, run_data)
+ggplot(OGs_sum, aes(x = min_d2_source, y = n_hammers)) + geom_point()+
+  facet_grid(as.factor(num_sources)~as.factor(num_nutree))+
+    labs(x = "Distance to Source",
+       y = "N Pounding Tools") + 
+  base_theme
+
+```
+
+
+```{r echo=FALSE, warning=FALSE, message= FALSE, fig.height=6, fig.width=6, fig.cap= "The relationship between the size of Pounding Tools and distance to their sources. Note how the number of _Trees_ attenuates the scale and strength of this relationship"}
+
+ggplot(OGs_75k, aes(x = d2source, y=Tool_size)) + geom_point()+
+  facet_grid(as.factor(num_sources)~as.factor(num_nutree))+
+      labs(x = "Distance to Source",
+       y = "Pounding Tool Size") + 
+  base_theme
+
+
+```

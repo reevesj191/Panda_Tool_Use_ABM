@@ -17,8 +17,6 @@ from multiprocessing import freeze_support
 fixed_params = {"width": 250,
                 "height":  250,
                 "Na": 100,
-                "Ns": 10,
-                "Nn": 2000,
                 "max_ts": 75000,
                 "tool_acq": "nearest",
                 "db_name": "Experiment_PNAS"

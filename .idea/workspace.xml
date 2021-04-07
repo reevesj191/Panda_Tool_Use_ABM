@@ -2,28 +2,21 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a7db6bcd-9ad2-4701-8fcf-c03d20a69f07" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/Panda_Tool_Use_ABM.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.Rhistory" beforeDir="false" afterPath="$PROJECT_DIR$/.Rhistory" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Primate_Tool_Use_ABM.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Agents.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Compile_Data.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model_definition.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Multiprocessing.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tai_Data/Inselberge.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tai_Data/Panda tools_Jon.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tai_Data/Panda trees Sud 2014.gpx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tai_Data/Panda_tools_Jon.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tai_Data/Stones in territory_all.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/abm_functions.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/behavior_space.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/delete.db_iterations/ppWBqb.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/delete.db_iterations/rYsycz.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/run.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/visualization.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Model/Compile_Data.py" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Compile_Data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Model/behavior_space.py" beforeDir="false" afterPath="$PROJECT_DIR$/Model/behavior_space.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Reeves_et_al_2021_Panda_ABM/Reeves_et_al_2021_Panda_ABM.Rmd" beforeDir="false" afterPath="$PROJECT_DIR$/Reeves_et_al_2021_Panda_ABM/Reeves_et_al_2021_Panda_ABM.Rmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Reeves_et_al_2021_Panda_ABM/Reeves_et_al_2021_Panda_ABM.docx" beforeDir="false" afterPath="$PROJECT_DIR$/Reeves_et_al_2021_Panda_ABM/Reeves_et_al_2021_Panda_ABM.docx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Reeves_et_al_2021_Panda_ABM/Reeves_et_al_2021_Panda_ABM.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/Reeves_et_al_2021_Panda_ABM/Reeves_et_al_2021_Panda_ABM.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Reeves_et_al_2021_Panda_ABM/Reeves_et_al_2021_Panda_ABM.tex" beforeDir="false" afterPath="$PROJECT_DIR$/Reeves_et_al_2021_Panda_ABM/Reeves_et_al_2021_Panda_ABM.tex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Reeves_et_al_2021_Panda_ABM/Reeves_et_al_2021_Panda_ABM_files/figure-docx/figure 3-1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Reeves_et_al_2021_Panda_ABM/Reeves_et_al_2021_Panda_ABM_files/figure-docx/figure-1-1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Reeves_et_al_2021_Panda_ABM/Reeves_et_al_2021_Panda_ABM_files/figure-docx/figure-2-1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Reeves_et_al_2021_Panda_ABM/Reeves_et_al_2021_Panda_ABM_files/figure-latex/figure 3-1.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/Reeves_et_al_2021_Panda_ABM/Reeves_et_al_2021_Panda_ABM_files/figure-latex/figure 3-1.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Reeves_et_al_2021_Panda_ABM/Reeves_et_al_2021_Panda_ABM_files/figure-latex/figure 4-1.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/Reeves_et_al_2021_Panda_ABM/Reeves_et_al_2021_Panda_ABM_files/figure-latex/figure 4-1.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Reeves_et_al_2021_Panda_ABM/Reeves_et_al_2021_Panda_ABM_files/figure-latex/figure-1-1.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/Reeves_et_al_2021_Panda_ABM/Reeves_et_al_2021_Panda_ABM_files/figure-latex/figure-1-1.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Reeves_et_al_2021_Panda_ABM/Reeves_et_al_2021_Panda_ABM_files/figure-latex/figure-2-1.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/Reeves_et_al_2021_Panda_ABM/Reeves_et_al_2021_Panda_ABM_files/figure-latex/figure-2-1.pdf" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,7 +38,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../Mendelian_Monkeys" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunManager" selected="Python.behavior_space">
+  <component name="RunManager" selected="Python.Compile_Data">
     <configuration name="Compile_Data" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Panda_Tool_Use_ABM" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -111,8 +104,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.behavior_space" />
         <item itemvalue="Python.Compile_Data" />
+        <item itemvalue="Python.behavior_space" />
         <item itemvalue="Python.visualization" />
       </list>
     </recent_temporary>

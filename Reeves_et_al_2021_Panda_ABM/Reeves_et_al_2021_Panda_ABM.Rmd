@@ -38,12 +38,12 @@ bibliography: pnas-sample.bib
 csl: pnas.csl
 lineno: false
 output:
-  word_document: default
-    
-    
   pdf_document:
     
     rticles::pnas_article
+  word_document: default
+    
+    
 ---
 
 ```{r setup, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
@@ -53,6 +53,7 @@ library(data.table)
 library(dplyr)
 library(ggplot2)
 library(gridExtra)
+source("../ABM_Functions.R")
 
 ## Figure theme
 
@@ -61,22 +62,13 @@ base_theme <- theme(axis.text = element_text(size = 5),
                     panel.background = element_rect(color = "black", fill = "white"))
 
 ## Load Data
-run_data <- fread("../../Panda_ABM_Analysis/Data/EXP_12_Mem_Safe_Run_Data.csv")
+run_data <- fread("../Data/EXP_PNAS_run_data.csv")
 
-OGs <- fread("../../Panda_ABM_Analysis/Data/EXP12_Mem_Safe_All_OG.csv")
-sources <- fread("../../Panda_ABM_Analysis/Data/EXP12_MemSafe_All_sources.csv")
-OGs <- left_join(OGs, run_data)
-OGs_75k <- subset(OGs, n_time_steps == 75000)
+OGs <- fread("../Data/EXP_PNAS_All_OG.csv")
+sources <- fread("../Data/EXP_PNAS_sources.csv")
 
-
-sources$s_id <- paste(sources$run_id, sources$id)
-OGs_75k$s_id <- paste(OGs_75k$run_id, OGs_75k$source_id)
-source_join <- sources[,c("s_id", "x", "y")]
-colnames(source_join) <- c("s_id", "s_x", "s_y")
-OGs_75k <- left_join(OGs_75k, source_join, by = c("s_id" = "s_id"))
-OGs_75k$d2source <- sqrt(((OGs_75k$x-OGs_75k$s_x)^2) + 
-                           ((OGs_75k$y-OGs_75k$s_y)^2))
-
+OGs$d2source <- dist2source(tools = OGs,
+                            sources = sources)
 ```
 
   The adaptive success of humans is largely based on our ability to use tools to mitigate or modify whatever environmental circumstances that confront us. Over human evolutionary history, this trait has facilitated the expansion of humans and their ancestors across every environment in the terrestrial world [@hillEmergenceHumanUniqueness2009]. While it is  now understood that the emergence of this trait is the result of feedback between genetic, ecological, and cultural processes over time [@boydNotGenesAlone2005; @danchinDNAIntegratingInclusive2011; @fogartyNicheConstructionCultural2017; @lalandCulturalNicheConstruction2011; @lalandNicheConstructionBiological2000; @obrienDualInheritanceCultural2017; @odling-smeeNicheConstructionTheory2013; @rendellRunawayCulturalNiche2011], the mechanisms that transformed this behavior from the simple forms of tool use that are observed across multiple taxa to an obligate reliance on material culture remains unclear. Primate behavioral ecology provides a potential window of insight into the origin of this trait as primate tool use is argued to approximate the types of tool using behaviors present at the root of the hominid lineage [@carvalhoToolcompositeReuseWild2009; @lalandAnimalCultures2008; @lunczPrimateArchaeologyReveals2015; @mcgrewChimpanzeeMaterialCulture1992]. Thus, examining the dynamic ecological settings in which tool-use occurs allows researchers to generate hypotheses of how complex tool use emerged and was maintained in the hominin lineage [@sanzEcologicalSocialCorrelates2013]. However, placing primate tool use within a broader evolutionary context requires (1) understanding its relationship within broader long term environmental dynamics and (2) establishing corollaries linking these dynamics to the variation in a recoverable material record [@pangerOlderOldowanRethinking2003; @stinerChallengesDocumentingCoevolution2020]. 
@@ -118,7 +110,7 @@ res_F_sources <- res$`F value`[2]
 res_P_trees <- res$`Pr(>F)`[1]
 
 
-OGs_sum <- OGs_75k %>% group_by(run_id, rm_quality) %>%
+OGs_sum <- OGs %>% group_by(run_id, rm_quality) %>%
   summarize(max_d2_source = max(d2source))
 OGs_sum <- left_join(OGs_sum, run_data)
 
@@ -130,8 +122,34 @@ n_runs_new_trees <- sum(run_data$new_trees > 0)
 per_runs_new_trees <- round(n_runs_new_trees/nrow(run_data),2) * 100
 ```
 
+```{r figure-1, include=FALSE}
 
-```{r figure-1, echo=FALSE, warning=FALSE, fig.cap=" **Left**: The effects of small scale tool use on the distance _Pounding Tools_ move from their source. The box plots show that the number of sources has a marginal effect on how far tools move from their source. However, fig.width=3.5, message=FALSE, warning=FALSE, paged.print=FALSE, the number of of Trees has positive influence on how far tools can move. **Right**: The effect of small scale tool use on the number of _Trees_ where tools use can occur. Both the number of _Sources_ and _Trees_ has a positive influence on the number of _Trees_ where tool use can occur. Note that the Y axis for the right panel is in log scale \\label{d2source}", fig.height=2.5, fig.width=3.5}
+model.res <- lm(max_d2_source~num_nutree*num_sources, data = OGs_sum[OGs_sum$treessdie == 0,])
+
+xp1 = seq(from=min(OGs_sum$num_nutree), to = max(OGs_sum$num_nutree), length.out = 11)
+yp2 = seq(from=min(OGs_sum$num_sources), to = max(OGs_sum$num_sources), length.out = 11)
+coeffs=coefficients(model.res)
+pred.mat <- outer(X=xp1, Y = yp2, FUN =function(x,y){
+  coeffs[1] + coeffs[1]*x+coeffs[2]*y + coeffs[3] *x*y
+})
+
+par(mar=c(0.2, 1.5, 0.2, 0.2))
+
+tmat=persp(x=xp1,
+           y= yp2,
+           z=pred.mat,
+           theta = -65,
+           phi = 10, 
+           expand = .5,
+           r = 10, 
+           xlab = "N Trees",
+           ylab = "N Sources",
+           zlab = "Max Tool Distance from Source",
+           ylim = range(yp2))
+
+```
+
+```{r figure-1, eval=FALSE, fig.cap=" **Left**: The effects of small scale tool use on the distance _Pounding Tools_ move from their source. The box plots show that the number of sources has a marginal effect on how far tools move from their source. However, fig.width=3.5, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE, the number of of Trees has positive influence on how far tools can move. **Right**: The effect of small scale tool use on the number of _Trees_ where tools use can occur. Both the number of _Sources_ and _Trees_ has a positive influence on the number of _Trees_ where tool use can occur. Note that the Y axis for the right panel is in log scale \\label{d2source}", fig.height=2.5}
 
 
 a <- ggplot(OGs_sum, aes(x = as.factor(num_sources), y = max_d2_source, fill = as.factor(num_nutree))) + 
@@ -167,16 +185,29 @@ lay <- rbind(c(NA,1,1,NA),
 grid.arrange(leg,a,b, layout_matrix = lay)
 ```
 
+
+\begin{figure}
+
+\includegraphics{Reeves_et_al_2021_Panda_ABM_files/figure-latex/figure 1-1.pdf}
+
+\caption{A two-way interaction plot illustrating the effect of the number of _Trees_ and number of _Sources_ on distance maximum distance a _Pounding Tool_ is able to move from where it was initially acquired, its source}
+
+\label{d2source}
+
+\end{figure}
+
+
   One of the simplest and expected outcomes of the model is that small scale tool use can occur when a _Tree_ and a _Source_ occur within a 3 grid cell radius of each other. Tool use did not occur in `r per_runs_no_tool_use`% of the runs due to the fact that _Trees_ were never close enough to a _Source_. This was predominantly the case in model iterations where both the number of _Sources_ and _Trees_ included in the model were low (SOM: Table 1). Therefore simply increasing both the number of _Sources_ or _Trees_ increases the number of places and ultimately the likelihood that tool use can occur (SOM Figure 1: left, ANOVA, F: `r res_F_trees`, P-value: `r res_P_trees`).  
 
   When tool use does occur, `r per_maxD_greater_than_three`% of model iterations, led to movement of _Pounding Tools_ across beyond the initial constraints of the landscape. When a Pounding Tool is moved from a _Source_ to the location of a _Tree_, it becomes a secondary source of raw material for other _Trees_ in the vicinity. Over time, provided that Trees occur within a 3-grid cell radius of each other, the repeated transport of _Pounding Tools_ incrementally moves Pounding Tools up to a maximum distance of `r max_d` grid cells from its _Source_. The maximum distance a _Pounding Tool_ can be moved is attenuated by the number of _Trees_ in the model run. _Pounding Tools_ move greater distances the number of _Trees_ is greater (Figure \ref{d2source}, left).  In addition, the small nature of breakage fragments relative to the size of the _Pounding Tool_ allows _Pounding Tools_ to be used and transported 10s to 100s of times prior to total exhaustion allowing tools of all qualities to be moved substantial distances from their _Sources_ (SOM Table 2). Nevertheless, _Pounding Tools_ of higher quality will move greater maximum distances from _Sources_ prior to exhaustion. The size of the _Pounding Tool_ also influences the maximum distance a pounding tool can be moved (SOM Figure 2). This is because both of these variables influence the number of times _Pounding Tools_ can be used and subsequently transported (i.e. use-life). This incremental transport of _Pounding Tools_ away from their sources consequently  increases the number of locations where tool use can occur in `r per_runs_new_trees`% of the runs (Figure \ref{d2source}, right). In other words, the repeated transport of tools across the landscape increases the number of opportunities for tool-use on a given landscape. The 12% of Model runs that did not lead to an increased access of Trees for nut-cracking are predominantly those where the number of _Trees_ or _Sources_ are initially low (SOM Table 3).
 
   Interestingly, the changing locations of _Trees_, due to natural growth and death cycles also strongly influences the above described pattern. When holding the number of _Sources_, and _Trees_ constant, iterations where _Trees_ grow and die further increases the number of trees that became available as loci for tool use (SOM Figures 3, 4). When _Tree_ locations remains static (i.e. they do not die or grow), the number of _Trees_ that are accessible for tool use events eventually plateaus thus limiting the area in which _Pounding Tools_ can be redistributed (Figure \ref{tree_death}, left). In contrast. the accessibility of _Trees_ for tool use does not diminish when Trees change locations over time instead, the number of _Trees_ where tool use can occur continues to increase over time (Figure \ref{tree_death}, right) in spite of the fact that _Pounding Tool_ use and _Tree_ life cycle operate on different temporal scales, the results show that the interaction of these processes continuously increase the availability of the _Trees_ across the landscape over time. 
 
+
 ```{r figure-2, echo=FALSE, warning=FALSE, message=FALSE,fig.height=2, fig.width=3.5, fig.cap="The effect of tree death and growth and the number of trees that come available due to the small scale transport of _Pounding Tools_. When _trees_ remain in a the same location (**Left**) the number of new trees that can be accessed due to the incremental transport of *Pounding Tools* raises and then eventually plateaus. However, when *Trees* die and grow (**Right**), these slow changes in the locations of the trees further promotes the incidental movement of *Pounding Tools* away from their *Sources* \\label{tree_death}"}
 
 
-env_data <- fread("../../Panda_ABM_Analysis/Data/EXP12_Mem_Safe_Env_75k_100s_2000t.csv")
+env_data <- fread("../Data/EXP_PNAS_Env_Data_ns_500_nt_2000.csv")
 
 key <- c("Static Trees", "Dynamic Trees")
 names(key) <- c(0,1)
@@ -190,13 +221,41 @@ env_data <- subset(env_data, !(ts %in% c(0)))
 
 env_data <- left_join(env_data, run_data)
 
-ggplot(env_data, aes(x = ts, y = as.numeric(trees_available))) +
+static <- subset(env_data, treessdie == 0)
+dynamic <- subset(env_data, treessdie == 1)
+
+brks <- seq(from = 0, to= max(env_data$trees_available), by=100)
+
+a <- ggplot(data = static, aes(ts, y=run_id)) + geom_tile(aes(fill = as.numeric(trees_available))) +base_theme + 
+  scale_fill_viridis_c(breaks= brks)+
+  theme(legend.pos = "none",                                                                               axis.text.y = element_blank())
+
+b <- ggplot(data = dynamic, aes(ts, y=run_id)) + geom_tile(aes(fill = as.numeric(trees_available))) +
+  scale_fill_viridis_c(breaks= brks)+
+  base_theme + theme(legend.pos = "none",                                                                               axis.text.y = element_blank())
+
+c <- ggplot(static, aes(x = ts, y = as.numeric(trees_available))) +
   geom_path(aes(group = run_id), alpha = .5) +
+  scale_y_continuous(limits = c(500,max(env_data$trees_available)))+
   labs(x = "Time", y = "Number of Trees Available")+
-  facet_wrap(~treessdie, labeller = labeller(treessdie = key))+
   base_theme
 
+d <- ggplot(dynamic, aes(x = ts, y = as.numeric(trees_available))) +
+  geom_path(aes(group = run_id), alpha = .5) +
+  scale_y_continuous(limits = c(500,max(env_data$trees_available)))+
+  labs(x = "Time", y = "Number of Trees Available")+
+  base_theme
+
+
+
+lay_mat <- rbind(c(1,1,1,3),
+                 c(2,2,2,4))
+
+
+grid.arrange(a,b,c,d, layout_matrix = lay_mat)
+
 ```
+
 
 ### Material Signature
 
@@ -209,9 +268,9 @@ maptheme <- base_theme + theme(axis.title = element_blank(),
                                axis.text = element_blank(),
                                axis.ticks = element_blank())
 
-xsources <- fread("../../Panda_ABM_Analysis/Data/Figure_3/Plot_A_sources.csv")
-xtrees <- fread("../../Panda_ABM_Analysis/Data/Figure_3/Plot_A_trees.csv")
-xtools <- fread("../../Panda_ABM_Analysis/Data/Figure_3/Plot_A_tools.csv")
+xsources <- fread("../Data/Figure_3/Plot_A_sources.csv")
+xtrees <- fread("../Data/Figure_3/Plot_A_trees.csv")
+xtools <- fread("../Data/Figure_3/Plot_A_tools.csv")
 xtools <- xtools %>% group_by(x,y) %>% summarise(N_tools = n())
 
 xsources$type = "Stone source"
@@ -226,9 +285,9 @@ scale_y_continuous(limits = c(0,250)) +
   maptheme + theme(legend.position = "none")
   
 
-xsources <- fread("../../Panda_ABM_Analysis/Data/Figure_3/Plot_b_sources.csv")
-xtrees <- fread("../../Panda_ABM_Analysis/Data/Figure_3/Plot_b_trees.csv")
-xtools <- fread("../../Panda_ABM_Analysis/Data/Figure_3/Plot_b_tools.csv")
+xsources <- fread("../Data/Figure_3/Plot_b_sources.csv")
+xtrees <- fread("../Data/Figure_3/Plot_b_trees.csv")
+xtools <- fread("../Data/Figure_3/Plot_b_tools.csv")
 xtools <- xtools %>% group_by(x,y) %>% summarise(N_tools = n())
 
 xsources$type = "Stone source"
@@ -243,9 +302,9 @@ b <- ggplot() +
   maptheme +  theme(legend.position = "none")
 
 
-xsources <- fread("../../Panda_ABM_Analysis/Data/Figure_3/Plot_c_sources.csv")
-xtrees <- fread("../../Panda_ABM_Analysis/Data/Figure_3/Plot_c_trees.csv")
-xtools <- fread("../../Panda_ABM_Analysis/Data/Figure_3/Plot_c_tools.csv")
+xsources <- fread("../Data/Figure_3/Plot_c_sources.csv")
+xtrees <- fread("../Data/Figure_3/Plot_c_trees.csv")
+xtools <- fread("../Data/Figure_3/Plot_c_tools.csv")
 xtools <- xtools %>% group_by(x,y) %>% summarise(N_tools = n())
 
 xsources$type = "Stone source"
@@ -295,36 +354,45 @@ grid.arrange(a,b,c,leg,
 
 \end{figure*}
 
- In addition, the density of discarded material, as well as the size of the _Pounding Tools_ are also structured across space. The amount of discarded material per grid cell also forms a noisy  distance-decay relationship as the distance to the nearest source increases (Figure 4, SOM Figure 5). The noise in the pattern is due to the fact that tool-use and the location of trees are spatially auto-correlated. If trees occur in such a way that allows _Pounding Tools_ to move from tree to tree away from primary raw material sources, then a distance-decay pattern will form. If, however, a single _Tree_ occurs in isolation in proximity to a primary raw material source, then hammer-stones will be used without being transported further than the location of the tree. As a result, in model runs where the number of _Trees_ permit, the repeated movement and use of _Pounding Tools_ results in a distance–decay relationship where the range and average _Pounding Tool_ size  decreases as distance from its primary raw material source increases (Figures 4, SOM Fig. 6, SOM Fig. 7).
+In addition, the density of discarded material, as well as the size of the _Pounding Tools_ are also structured across space. The amount of discarded material per grid cell also forms a noisy  distance-decay relationship as the distance to the nearest source increases (Figure 4, SOM Figure 5). The noise in the pattern is due to the fact that tool-use and the location of trees are spatially auto-correlated. If trees occur in such a way that allows _Pounding Tools_ to move from tree to tree away from primary raw material sources, then a distance-decay pattern will form. If, however, a single _Tree_ occurs in isolation in proximity to a primary raw material source, then hammer-stones will be used without being transported further than the location of the tree. As a result, in model runs where the number of _Trees_ permit, the repeated movement and use of _Pounding Tools_ results in a distance–decay relationship where the range and average _Pounding Tool_ size  decreases as distance from its primary raw material source increases (Figures 4, SOM Fig. 6, SOM Fig. 7).
 
-  Although _Pounding Tools_ are the only tool used within the model they not are homogeneously distributed across the simulated landscape. The number of _Pounding Tools_ within a given grid-cell also follows a sharp distance-decay relationship with the nearest _Source_. In other words, _Pounding tools_ are found in there highest quantities in assemblages nearest to _Sources_ and become increasing scarce as the distance to the nearest _Source_ increases. In fact, 78% of the grid-cells that form material assemblages are comprised entirely of fragments or exhausted Pounding Tools. An additional 11% of the grid-cells contain a single exhausted _Pounding Tool_.
+Although _Pounding Tools_ are the only tool used within the model they not are homogeneously distributed across the simulated landscape. The number of _Pounding Tools_ within a given grid-cell also follows a sharp distance-decay relationship with the nearest _Source_. In other words, _Pounding tools_ are found in there highest quantities in assemblages nearest to _Sources_ and become increasing scarce as the distance to the nearest _Source_ increases. In fact, 78% of the grid-cells that form material assemblages are comprised entirely of fragments or exhausted Pounding Tools. An additional 11% of the grid-cells contain a single exhausted _Pounding Tool_.
 
 
 ```{r figure 4, fig.height=2.5, fig.width=6, include=FALSE}
 
 
-tools <- fread("../../Panda_ABM_Analysis/Data/EXP12_MemSafe_tools_75k.csv")
-tools$s_id <- paste(tools$run_id, tools$source_id)
-source_join <- sources[,c("s_id", "x", "y")]
-colnames(source_join) <- c("s_id", "s_x", "s_y")
-tools <- left_join(tools, source_join, by = c("s_id" = "s_id"))
-tools$d2source <- sqrt(((tools$x-tools$s_x)^2) + ((tools$y-tools$s_y)^2))
 
+
+tools <- fread("../Data/EXP_PNAS_tools.csv")
+trees <- fread("../Data/EXP_PNAS_trees.csv")
+
+trees$life <- "Dead"
+trees$life[trees$ts_died == -1] <- "Alive"
+
+tools$d2source <- dist2source(tools = tools,sources = sources) 
+  
 tools_sum <- tools %>% 
   group_by(run_id, x, y) %>%
   summarise(n_tools = n(),
             min_d2_source = min(d2source),
             n_pounding = sum(Tool_size >=2000))
+
 tools_sum <- left_join(tools_sum, run_data)
 
-Tool_sum_sub <- subset(tools_sum, num_sources == 100 & num_nutree == 2000 & treessdie == 1)
-OGs_75k <- subset(tools, parent_id == "OG")
-OGs_sum <- OGs_75k %>% group_by(run_id, x, y) %>%
-  summarise(n_hammers = n(),
-            min_d2_source = min(d2source),
-            med_d2_source = median(d2source),
-            max_d2_source = max(d2source),
-            mean_uses = mean(n_uses))
+
+tool_sum_sub <- subset(tools_sum, num_sources == 100 & num_nutree == 2000 & treessdie == 1)
+tool_sum_sub$tree_status <- NA
+
+for(i in 1:nrow(tool_sum_sub)){
+  
+  site <- tool_sum_sub[i,]
+  sub_trees  <- subset(trees, run_id == site$run_id)
+  
+  
+}
+
+
 
 
 a <- ggplot(Tool_sum_sub, aes(x = min_d2_source, y= n_tools)) + 
@@ -357,7 +425,7 @@ grid.arrange(a,b,c, ncol=3)
 Discussion
 =============
 
-  The results of our model elucidate the relationship tool-use involving short term transport,  between resource density (number of Sources and Pounding Tools), environmental change, and the formation of the archaeological record. While these results illustrate how the distribution of resources within an environment ultimately constrains the opportunities for  tool-use, specific configurations of resources – particularly those with large numbers of _Trees_ – can have a long lasting influence on the distribution of materials needed for tool use. The model also shows how short term instances of tool transportation can lead to the movement of _Pounding Tools_ across long distances over time thus increasing the number of opportunities for tool use. This long term modification of the landscape is further encouraged by the widespread distribution of foraging opportunities to use tools (in our model _Trees_). These dynamics not only influence the prevalence of locations where it is possible to forage where tools are necessary but also the structure of the resulting archaeological record. 
+The results of our model elucidate the relationship tool-use involving short term transport,  between resource density (number of Sources and Pounding Tools), environmental change, and the formation of the archaeological record. While these results illustrate how the distribution of resources within an environment ultimately constrains the opportunities for  tool-use, specific configurations of resources – particularly those with large numbers of _Trees_ – can have a long lasting influence on the distribution of materials needed for tool use. The model also shows how short term instances of tool transportation can lead to the movement of _Pounding Tools_ across long distances over time thus increasing the number of opportunities for tool use. This long term modification of the landscape is further encouraged by the widespread distribution of foraging opportunities to use tools (in our model _Trees_). These dynamics not only influence the prevalence of locations where it is possible to forage where tools are necessary but also the structure of the resulting archaeological record. 
 	
 \begin{figure*}
 
@@ -371,9 +439,9 @@ Discussion
 
 ### Environmental Facilitators of Tool Use
 
-  It has often been argued that patterns of tool assisted foraging are driven by encounter rates with resources requiring and raw material needed for tool use [@foxIntelligentToolUse1999; @koopsEcologyCultureEnvironmental2013]. The results of our model provide further support for this hypothesis by showing that when tool-using behavior is expedient, the number of opportunities use tools is entirely regulated by the frequency and co-occurrence of resources and sources of material in space. Nevertheless, when there are certain configurations of resources, even short bouts of transport can have long term effects on the spatial distribution tool materials and the number of opportunities for tool use beyond what the structure of the landscape naturally allows. In these situations, opportunities for tool-use are not limited by the constraints of the environment and can even be increased by the tool using behavior itself. This work shows that even small scale tool using behaviors have the capacity to modify the availability of a resource through the redistribution tool material. In this light, the model illustrates the niche constructing capacity of such small scale tool using behaviors as increasing the availability of tool-facilitated resources also increases number of times an individual encounters tool using opportunities. 
+It has often been argued that patterns of tool assisted foraging are driven by encounter rates with resources requiring and raw material needed for tool use [@foxIntelligentToolUse1999; @koopsEcologyCultureEnvironmental2013]. The results of our model provide further support for this hypothesis by showing that when tool-using behavior is expedient, the number of opportunities use tools is entirely regulated by the frequency and co-occurrence of resources and sources of material in space. Nevertheless, when there are certain configurations of resources, even short bouts of transport can have long term effects on the spatial distribution tool materials and the number of opportunities for tool use beyond what the structure of the landscape naturally allows. In these situations, opportunities for tool-use are not limited by the constraints of the environment and can even be increased by the tool using behavior itself. This work shows that even small scale tool using behaviors have the capacity to modify the availability of a resource through the redistribution tool material. In this light, the model illustrates the niche constructing capacity of such small scale tool using behaviors as increasing the availability of tool-facilitated resources also increases number of times an individual encounters tool using opportunities. 
 
-​	In addition, the model demonstrates how these small scale tool using behaviors generate positive feedback with the changes in tool-use locations that further enhances the availability of resources and the number of tool using opportunities over the long term. Moreover, the fact that the model   Though environmental dynamics are often argued to influence behavioral patterns across evolutionary time-scales but, such arguments lack mechanisms that causally link the two processes together [@behrensmeyerClimateChangeHuman2006; @kingstonShiftingAdaptiveLandscapes2007; @stinerChallengesDocumentingCoevolution2020]. Our model contributes to this discussion by illustrating how processes that operate on different temporal scales produces feedback.  While the model does not consider reproduction, these results may imply that new generations of a population where such feedback is in effect inherit a landscape in which resources associated with this type of tool using behavior are more accessible than they were in previous generations. 
+In addition, the model demonstrates how these small scale tool using behaviors generate positive feedback with the changes in tool-use locations that further enhances the availability of resources and the number of tool using opportunities over the long term. Moreover, the fact that the model   Though environmental dynamics are often argued to influence behavioral patterns across evolutionary time-scales but, such arguments lack mechanisms that causally link the two processes together [@behrensmeyerClimateChangeHuman2006; @kingstonShiftingAdaptiveLandscapes2007; @stinerChallengesDocumentingCoevolution2020]. Our model contributes to this discussion by illustrating how processes that operate on different temporal scales produces feedback.  While the model does not consider reproduction, these results may imply that new generations of a population where such feedback is in effect inherit a landscape in which resources associated with this type of tool using behavior are more accessible than they were in previous generations. 
 
 ### Implications for Chimpanzee Stone Tool Use
 
@@ -383,17 +451,17 @@ However, unlike the model percussive tools do not accumulate at tool-use sites n
 
 ### Implications for hominin evolution 
 
-​	One of the hallmarks of hominin and human niche is the capacity to enable to increase their access to resources through the transport and reuse of tool material [@binfordWillowSmokeDogs1980; @kuhnMousterianLithicTechnology1995; @pottsWhyOldowanPlioPleistocene1991; @schickModelingFormationEarly1987]. The relocation of such materials into material poor areas, effectively makes a lasting change to the environment which, in turn conditions, the mobility, foraging, or even settlement strategies of future generations [@braunEcosystemEngineeringQuaternary2020; @haasForagerMobilityConstructed2019; @iovitaOperationalizingNicheConstruction2021; @lalandNicheConstructionBiological2000]. Within this context, our model shows that even transport over short distances can modify landscapes in such a way that increases, both the opportunities for tool use and the accessibility of resources.
+One of the hallmarks of hominin and human niche is the capacity to enable to increase their access to resources through the transport and reuse of tool material [@binfordWillowSmokeDogs1980; @kuhnMousterianLithicTechnology1995; @pottsWhyOldowanPlioPleistocene1991; @schickModelingFormationEarly1987]. The relocation of such materials into material poor areas, effectively makes a lasting change to the environment which, in turn conditions, the mobility, foraging, or even settlement strategies of future generations [@braunEcosystemEngineeringQuaternary2020; @haasForagerMobilityConstructed2019; @iovitaOperationalizingNicheConstruction2021; @lalandNicheConstructionBiological2000]. Within this context, our model shows that even transport over short distances can modify landscapes in such a way that increases, both the opportunities for tool use and the accessibility of resources.
 
- 	It may be that such interactions between the distribution of resources and short term tool transport behavior had the capacity to generate feedback that may have influenced the role tool use in  hominin evolution. For example, percussive tools may facilitated access to animal protein through the breakage bones prior to the emergence core and flake technology [@thompsonOriginsHumanPredatory2019]. Within the context of the model it is plausible, that the interaction between short distance transport of percussive tools and the changing locations of animal carcasses as the result of the emergence of new kills and the decomposition of old kills, would have created a dynamic that would systematically seed a lake margin environment with percussive tools. This would increase both the number of opportunities and encounter rates with scavengable carcasses and in turn increase the contribution of animal protein to the hominin diet. Such encounter rates would have been critical to recognizing animal carcasses as a food resource and its increased consumption over time [@thompsonOriginsHumanPredatory2019]. In may that simple interactions between local environmental dynamics and tool transport may have contributed to the increased consumption of protein which is argued to have played an important role in hominin brain evolution and even the emergence of _H. erectus_ [@antonEvolutionEarlyHomo2014; @lalandNicheConstructionBiological2000; @pattersonComparativeIsotopicEvidence2019].
+It may be that such interactions between the distribution of resources and short term tool transport behavior had the capacity to generate feedback that may have influenced the role tool use in  hominin evolution. For example, percussive tools may facilitated access to animal protein through the breakage bones prior to the emergence core and flake technology [@thompsonOriginsHumanPredatory2019]. Within the context of the model it is plausible, that the interaction between short distance transport of percussive tools and the changing locations of animal carcasses as the result of the emergence of new kills and the decomposition of old kills, would have created a dynamic that would systematically seed a lake margin environment with percussive tools. This would increase both the number of opportunities and encounter rates with scavengable carcasses and in turn increase the contribution of animal protein to the hominin diet. Such encounter rates would have been critical to recognizing animal carcasses as a food resource and its increased consumption over time [@thompsonOriginsHumanPredatory2019]. In may that simple interactions between local environmental dynamics and tool transport may have contributed to the increased consumption of protein which is argued to have played an important role in hominin brain evolution and even the emergence of _H. erectus_ [@antonEvolutionEarlyHomo2014; @lalandNicheConstructionBiological2000; @pattersonComparativeIsotopicEvidence2019].
 
 ### Implications for the archaeological record 
 
-  In order to understand if the processes illustrated in the model had bearing on the past, evidence of such dynamics must gleaned from a static material record. As such, the results of the model provides novel insights into the transformation of these processes into an archaeological record. Percussive tools are the most characteristic artefact of the primate stone tool record and are well described in both human and nonhuman primates [@arroyoPoundingToolsHWK2018; @benito-calvoFirstGISAnalysis2015]. The results of the model illustrate how the tangible traces on left on percussive tools in terms of their degree of utilization and their distance from their source location are result of this interaction between external and behavioral processes. Both of these attributes can be inferred from archaeological contexts [@lathamNondestructiveXrfCharacterization1992; @lunczDistancedecayEffectStone2016]. 
+In order to understand if the processes illustrated in the model had bearing on the past, evidence of such dynamics must gleaned from a static material record. As such, the results of the model provides novel insights into the transformation of these processes into an archaeological record. Percussive tools are the most characteristic artefact of the primate stone tool record and are well described in both human and nonhuman primates [@arroyoPoundingToolsHWK2018; @benito-calvoFirstGISAnalysis2015]. The results of the model illustrate how the tangible traces on left on percussive tools in terms of their degree of utilization and their distance from their source location are result of this interaction between external and behavioral processes. Both of these attributes can be inferred from archaeological contexts [@lathamNondestructiveXrfCharacterization1992; @lunczDistancedecayEffectStone2016]. 
 
-  However, documenting this pattern in an archaeological context is far more complex. While the results of this study show that in some circumstances, primate percussive behavior can produce a wide spread material record the ubiquity of pounding tools across the landscape is not homogenous. The percussive tools only occur in large quantities in assemblages where stone is readily available (i.e. close to Sources) and are relatively scarce or even absent in areas more distant from sources. In these distant places suitable pounding tools less available and therefore more likely to be transported more often. If there is a need to continuously transport and utilize the same hammerstones, as is observed in the model, then there may be little opportunity for tools to enter the archaeological record whole. Such tools may only enter the archaeological record as fragments or as an exhausted tool, at which point, they become almost archaeologically invisible [@schifferFormationProcessesArchaeological1987].   This phenomenon is echoed in the Tai Forest, for example, stone tool use was continuously observed from 1979 to 1983 site of Panda 100, until the death of the tree in 1984 [@boeschWildCulturesComparison2014]. Yet, archaeological investigation of the site yielded little to no evidence of complete hammerstones, suggesting that the discarded hammer stones at  the once live tree become a secondary source of material for other nut bearing trees [@mercaderExcavationChimpanzeeStone2002; @proffittRevisitingPanda1002018]. 
+However, documenting this pattern in an archaeological context is far more complex. While the results of this study show that in some circumstances, primate percussive behavior can produce a wide spread material record the ubiquity of pounding tools across the landscape is not homogenous. The percussive tools only occur in large quantities in assemblages where stone is readily available (i.e. close to Sources) and are relatively scarce or even absent in areas more distant from sources. In these distant places suitable pounding tools less available and therefore more likely to be transported more often. If there is a need to continuously transport and utilize the same hammerstones, as is observed in the model, then there may be little opportunity for tools to enter the archaeological record whole. Such tools may only enter the archaeological record as fragments or as an exhausted tool, at which point, they become almost archaeologically invisible [@schifferFormationProcessesArchaeological1987].   This phenomenon is echoed in the Tai Forest, for example, stone tool use was continuously observed from 1979 to 1983 site of Panda 100, until the death of the tree in 1984 [@boeschWildCulturesComparison2014]. Yet, archaeological investigation of the site yielded little to no evidence of complete hammerstones, suggesting that the discarded hammer stones at  the once live tree become a secondary source of material for other nut bearing trees [@mercaderExcavationChimpanzeeStone2002; @proffittRevisitingPanda1002018]. 
 
-  Although there is currently no physical evidence, it has been postulated that a culture of percussive technology similar to that of modern-day chimpanzees may have existed prior to the earliest known archaeological evidence of early hominins [@carvalhoToolcompositeReuseWild2009; @mcgrewChimpanzeeMaterialCulture1992; @mcgrewSearchLastCommon2010]. Few expectations have, however, been set forth regarding the composition of this archaeological record. Here we build upon the expectations of Panger et al. [@pangerOlderOldowanRethinking2003] by illustrating how the structure of the environment influences structure of the archaeological record. The results of this model suggest that the associated record may range from a few localized patches to a widespread distribution of archaeological sites throughout the landscape. If the earliest durable evidence of hominin tool-use is manifested as percussive tools then this record may be difficult to recover. While the model does show that this behavior can lead to the aggregation of large quantities of percussive tools, it also suggests that such localities are rare. In other environmental circumstances the archaeological record is far more wide spread, but most assemblages would be comprised of mostly fragments. Such a record, even if widespread, would be difficult to recognize as early forms of tool use let alone distinguish from non-anthropogenic processes.  
+Although there is currently no physical evidence, it has been postulated that a culture of percussive technology similar to that of modern-day chimpanzees may have existed prior to the earliest known archaeological evidence of early hominins [@carvalhoToolcompositeReuseWild2009; @mcgrewChimpanzeeMaterialCulture1992; @mcgrewSearchLastCommon2010]. Few expectations have, however, been set forth regarding the composition of this archaeological record. Here we build upon the expectations of Panger et al. [@pangerOlderOldowanRethinking2003] by illustrating how the structure of the environment influences structure of the archaeological record. The results of this model suggest that the associated record may range from a few localized patches to a widespread distribution of archaeological sites throughout the landscape. If the earliest durable evidence of hominin tool-use is manifested as percussive tools then this record may be difficult to recover. While the model does show that this behavior can lead to the aggregation of large quantities of percussive tools, it also suggests that such localities are rare. In other environmental circumstances the archaeological record is far more wide spread, but most assemblages would be comprised of mostly fragments. Such a record, even if widespread, would be difficult to recognize as early forms of tool use let alone distinguish from non-anthropogenic processes.  
 
 Conclusion
 ===========
