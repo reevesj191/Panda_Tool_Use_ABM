@@ -14,3 +14,7 @@ Data/EXP_PNAS_run_data.csv
 Data/EXP_PNAS_sources.csv
 Data/EXP_PNAS_tools.csv
 Data/EXP_PNAS_trees.csv
+Data/EXP_PNAS_tool_sum_ns_100_nt_2000.csv
+Data/EXP_PNAS_tool_sum_ns_100_nt_2000_updated.csv
+Data/EXP_PNAS_tools_ns_100_nt_2000.csv
+Data/EXP_PNAS_run_tools_sum.csv
