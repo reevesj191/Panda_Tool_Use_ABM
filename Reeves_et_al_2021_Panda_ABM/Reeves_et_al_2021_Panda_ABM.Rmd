@@ -358,7 +358,7 @@ grid.arrange(a,b,c,leg,
 
 \includegraphics[width=6.5in]{Reeves_et_al_2021_Panda_ABM_files/figure-latex/figure 3-1.pdf}
 
-\caption{A: The archaeological record when there are 100 _Sources_ and 100 _Trees_. Note that the subsequent archaeological record forms extremely localized patches of material. B: The archaeological record there 100 sources and 2000 trees. This archaeological record is becoming more wide-spread but remains localized. C: The archaeological record there 100 sources and 2000 trees where trees can die and regrow. The notice how the the growth and death of trees becomes substantially more widespread.}
+\caption{A: The archaeological record when there are 100 _Sources_ and 100 _Trees_. Note that the subsequent archaeological record forms extremely localized patches of material. B: The archaeological record there 100 _Sources_ and 2000 _Trees_. This archaeological record is becoming more wide-spread but remains localized. C: The archaeological record there 100 sources and 2000 trees where trees can die and regrow. The notice how the the growth and death of trees becomes substantially more widespread.}
 
 \label{distribution}
 
