@@ -41,9 +41,9 @@ class PrimToolModel(Model):
         self.num_nuttree = Nn
         self.treesdie = treesdie
         self.max_ts = max_ts
-        self.tool_acquistion = tool_acq
+        self.tool_acquistion = tool_acq # Cut for pub
         self.search_radius = search_rad
-        self.recycle_priority = recycle_priority
+        self.recycle_priority = recycle_priority # Cut for pub
         self.exp_name = db_name
         self.runs_path = "%s_iterations" % self.exp_name
         self.sql = os.path.join(self.runs_path, self.run_id)
@@ -84,7 +84,10 @@ class PrimToolModel(Model):
 
         for i in range(self.num_nuttree):
             tree = NutTree(self.next_id(), self)
-            tree.age = random.randint(1,10000)
+            if self.treesdie is True:
+                tree.age = random.randint(1,10000)
+            else:
+                tree.age = 0
             x = self.random.randrange(self.grid.width)
             y = self.random.randrange(self.grid.height)
             self.grid.place_agent(tree, (x, y))

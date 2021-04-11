@@ -16,7 +16,7 @@ class PrimAgent(Agent):
         self.Tool_id = -1    #The id of the tool acquired
         self.Source_id = -1  #The id of the source of the tool
         self.rm_qual = -1    #The quality of the tool acquired
-        self.active = -1     #Whether or not the tool is active.
+        #self.active = -1     #Whether or not the tool is active.
 
     def CheckForTree(self):
 
@@ -408,8 +408,6 @@ class NutTree(Agent):
         self.age = 0 #How the tree is
         self.alive = True # For debugging
         self.available = 0 # determines whether or not a pounding tool or source is within a 3 grid-cell radius.
-        self.near_source = 0
-        self.near_pounding = 0
         self.active = -1 # For debugging
 
 
@@ -433,17 +431,6 @@ class NutTree(Agent):
             self.available = 1
         else:
             self.available = 0
-
-        if len(sources) > 0:
-            self.near_source = 1
-        else:
-            self.near_source = 0
-
-        if len(pounding_tools) > 0:
-            self.near_pounding = 1
-        else:
-            self.near_pounding = 0
-
 
 
     def agedieGrow(self):

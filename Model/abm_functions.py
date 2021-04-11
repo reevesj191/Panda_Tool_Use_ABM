@@ -54,8 +54,8 @@ def create_DB(db_file):
                                 n_time_steps text,
                                 num_agents integer,
                                 num_sources integer,
-                                num_nutree integer,
-                                treessdie integer,
+                                num_trees integer,
+                                treesdie integer,
                                 tool_acq text,
                                 search_rad integer,
                                 tree_deaths integer); """
@@ -94,9 +94,8 @@ def create_DB(db_file):
 
         environment_table = """ CREATE TABLE IF NOT EXISTS environment (
                                 run_id text,
-                                trees_available text,
-                                trees_near_sources text,
-                                trees_near_pounding_tools text);
+                                time_step, integer,
+                                trees_available text);
                                 """
 
         c.execute(run_data_table)
