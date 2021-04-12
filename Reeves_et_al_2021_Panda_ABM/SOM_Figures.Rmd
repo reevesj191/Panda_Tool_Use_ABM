@@ -1,6 +1,8 @@
 ---
-title: "Reeves et al SOM Figures"
-output: pdf_document
+title: 'Modeling A Primate Technological Niche: Supplementary Tables and Figures'
+output:
+  pdf_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -37,7 +39,6 @@ OGs$d2source <- dist2source(tools = OGs,
 
 OGs <- left_join(OGs, run_data)
 ```
-
 
 
 ```{r echo=FALSE, warning=FALSE, message= FALSE, fig.width=6}
@@ -176,7 +177,7 @@ ggplot(tools_sum[tools_sum$treessdie == 1,], aes(x = min_d2_source, y= n_tools))
   geom_point() +
   labs(x = "Minimum Distance to Source",
        y = "Number of Artifacts") + 
-  facet_grid(as.factor(`N Sources`)~as.factor(`N Trees`), labeller = label_both)+
+  facet_grid(`N Sources`~`N Trees`, labeller = label_both)+
   base_theme
 
 ```
@@ -192,7 +193,7 @@ OGs_sum <- OGs %>%
 
 OGs_sum <- left_join(OGs_sum, run_data)
 ggplot(OGs_sum, aes(x = min_d2_source, y = n_pounding)) + geom_point()+
-  facet_grid(as.factor(`N Sources`)~as.factor(`N Trees`), labeller = label_both)+
+  facet_grid(`N Sources`~`N Trees`, labeller = label_both)+
     labs(x = "Min Distance to Source",
        y = "N Pounding Tools") + 
   base_theme
@@ -203,7 +204,7 @@ ggplot(OGs_sum, aes(x = min_d2_source, y = n_pounding)) + geom_point()+
 ```{r echo=FALSE, warning=FALSE, message= FALSE, fig.height=6, fig.width=6, fig.cap= "The relationship between the size of Pounding Tools and distance to their sources. Note how the number of _Trees_ attenuates the scale and strength of this relationship"}
 
 ggplot(OGs, aes(x = d2source, y=Tool_size)) + geom_point()+
-  facet_grid(as.factor(`N Sources`)~as.factor(`N Trees`))+
+  facet_grid(`N Sources`~`N Trees`, labeller = label_both)+
       labs(x = "Distance to Source",
        y = "Pounding Tool Size") + 
   base_theme
