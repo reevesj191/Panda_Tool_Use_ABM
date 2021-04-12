@@ -24,13 +24,11 @@ abstract: |
   Tool transport has been fundamental to the success of our lineage. The relocation of materials from where they naturally occur to where they are needed modifies the environment in a way that increases access to a broader landscape. In contrast, transport of tools over long distances has never been observed in primates. However, chimpanzee stone tools have been recorded farther from their raw material source than what is expected from ethological observations. The mechanisms through which the long distance relocation of tool material occurs is currently unknown. Here we present an agent-based model, built on observations of wild chimpanzee tool transport, that explores the relationship between tool-use, the environment, and the formation of the archaeological record. While our results show that primate tool-use is largely constrained by the environment, there are circumstances in which the aggregated effect of small-scale tool transport can dramatically increase the distribution of tool material across a wider landscape over time. This highlights the capacity for small-scale transport to increases the accessibility of otherwise inaccessible resources over time. Moreover, understanding the landscape patterning that this behavior produces will help us to draw corollaries between tool behavior and its archaeological record.  While our results also suggest that these processes leave tangible traces in the archaeological record, they are variable  and alerts us to the disparity between observed behaviors and their archaeological signature.
   
 significance: |
-
  Primate tool-use is generally considered to be expedient and largely restricted to places where tool materials and resources occur in close proximity. Our model shows how the repeated transport of stone tools over short distances can expand where tool-use can occur beyond the natural landscape. These results demonstrate the capacity for chimpanzee technological behavior to modify environments over time. However, inferring this behavior from its material record may prove difficult given mismatches between the behavior and its archaeological signature. 
   
 acknowledgements: |
   
   We  thank the Max Planck Institute for Evolutionary Anthropology for hosting our research group. JSR thanks the Luke Premo for providing feedback and thoughtful discussion on an earlier version of this work.   
-
 keywords:
   - Tool Transport
   - Niche Construction
@@ -58,6 +56,7 @@ library(data.table)
 library(dplyr)
 library(ggplot2)
 library(gridExtra)
+
 source("../ABM_Functions.R")
 
 ## Figure theme
@@ -135,54 +134,49 @@ Results
 ### Environment-Tool Use Dynamics
 
 
-```{r figure 1, echo=FALSE, fig.height=2.5, fig.width=3.25, fig.cap= "A two-way interaction plot illustrating the effect of the number of _Trees_ and number of _Sources_ on distance maximum distance _Pounding Tools_ move from its source. The number of sources has a marginal effect on the maximum distances _Pounding Tools_ move in the model whereas, increasing the number of _Trees_ has a large positive effect. \\label{d2source}" }
+```{r figure 1, fig.height=6, fig.width=6.5, include=FALSE}
 
-model.res <- lm(max_d2_source~num_nutree*num_sources, data = OGs_sum[OGs_sum$treessdie == 0,])
 
-xp1 = seq(from=min(OGs_sum$num_nutree), to = max(OGs_sum$num_nutree), length.out = 11)
-yp2 = seq(from=min(OGs_sum$num_sources), to = max(OGs_sum$num_sources), length.out = 11)
-coeffs=coefficients(model.res)
-pred.mat <- outer(X=xp1, Y = yp2, FUN =function(x,y){
-  coeffs[1] + coeffs[1]*x+coeffs[2]*y + coeffs[3] *x*y
-})
+x <- OGs_sum[OGs_sum$treessdie == 1,]$num_nutree
+y <- OGs_sum[OGs_sum$treessdie == 1,]$num_sources
+z <- OGs_sum[OGs_sum$treessdie == 1,]$max_d2_source
+# Compute the linear regression (z = ax + by + d)
+fit <- lm(z ~ x * y)
+# predict values on regular xy grid
+grid.lines = 11
+x.pred <- seq(min(x), max(x), length.out = grid.lines)
+y.pred <- seq(min(y), max(y), length.out = grid.lines)
+xy <- expand.grid( x = x.pred, y = y.pred)
+z.pred <- matrix(predict(fit, newdata = xy), 
+                 nrow = grid.lines, ncol = grid.lines)
 
-par(mar=c(0.2, 1.5, 0.2, 0.2))
 
-tmat=persp(x=xp1,
-           y= yp2,
-           z=pred.mat,
-           theta = -65,
+par(mar=c(0.5, 3, 0.2, 1))
+
+tmat=persp(x=x.pred,
+           y= y.pred,
+           z=z.pred,
+           theta = -45,
            phi = 10, 
-           expand = .5,
-           r = 10, 
-           xlab = "N Trees",
+           expand = .75,
+           r = 10,
+           box = TRUE,
+           axes = TRUE,
+           ticktype = "detailed",
+           xlab = "\nN Trees",
            ylab = "N Sources",
            zlab = "Max Dist from Source",
-           ylim = range(yp2))
+           zlim = c(0,max(z)))
 
-
-# model.res <- lm(new_trees~num_nutree*num_sources, data = run_data[run_data$treessdie == 0,])
-
-# xp1 = seq(from=min(run_data$num_nutree), to = max(run_data$num_nutree), length.out = 11)
-# yp2 = seq(from=min(run_data$num_sources), to = max(run_data$num_sources), length.out = 11)
-# coeffs=coefficients(model.res)
-# pred.mat <- outer(X=xp1, Y = yp2, FUN =function(x,y){
-#   coeffs[1] + coeffs[1]*x+coeffs[2]*y + coeffs[3] *x*y
-# })
-# 
-# tmat=persp(x=xp1,
-#            y= yp2,
-#            z=pred.mat,
-#            theta = 135,
-#            phi = 10, 
-#            expand = .5,
-#            r = 10, 
-#            xlab = "N Trees",
-#            ylab = "N Sources",
-#            zlab = "N new opportunities",
-#            ylim = range(yp2))
+points(trans3d(x=x, y=y, z=z, pmat=tmat))
 
 ```
+
+\begin{figure}
+\includegraphics[width=3.25in]{Reeves_et_al_2021_Panda_ABM_files/figure-latex/figure 1-1.pdf}
+\caption{illustrating the effect of the number of Trees and number of Sources on distance maximum distance Pounding Tools move from its source. The number of sources has a marginal effect on the maximum distances Pounding Tools move in the model whereas, increasing the number of Trees has a large positive effect.}
+\label{d2source}
+\end{figure}
 
  At the beginning of each model run tool-use can only occur in places where a _Tree_ is a maximum distance of 3 grid cells from a _Source_.  Simply increasing both the number of _Sources_ and/or _Trees_ increases the number of places where tool-use is possible (SOM Figure 1: left, ANOVA, F: 2435.41, P-value: 0). Tool-use occurred at _Trees_ located more than 3 grid cells from the nearest source in 95% of the runs. When a _Pounding Tool_ is moved from a _Source_, it becomes a secondary source of material for other _Trees_. Provided _Trees_ are within three grid cells, tools can be moved between them. As a result, repeated small scale transport can incrementally move _Pounding Tools_ up to a maximum distance of 58 grid cells from their original _Sources_.  Consequently, this redistribution of tools increases the number of opportunities for tool-use across a wider landscape. At the end of 88% of all runs, there are more places where tool-use can occur than at the beginning (Figure \ref{d2source}). The runs that did not show an increase in tool-use opportunities are those where the number of _Trees_ are initially low (SOM Table 3).
 
@@ -190,7 +184,7 @@ tmat=persp(x=xp1,
 
   The interplay between changing _Tree_ locations and the extended use-life of _Pounding Tools_ further facilitates the incremental distribution of tool materials across the landscape. When the numbers of _Sources_ and _Trees_ are held constant, iterations where _Trees_ change their location (i.e life-cycle) increases the distance _Pounding Tools_ can move. When _Tree_ locations remains static, the number of opportunities for tool use, over time, eventually plateaus and no more loci become available (Figure \ref{tree_death}, top). Conversely, when _Tree_ locations are dynamic, opportunities for tool use does not plateau or diminish over time. Instead, the number of Trees where tool use is possible continues to increase (Figure \ref{tree_death}, right) despite the fact that _Pounding Tool_ transport and _Tree_ life cycles operate on different temporal scales.
 
-```{r figure 2,dev= 'png', dpi= 1000 ,fig.height=3, fig.width=5, message=FALSE, warning=FALSE, include=FALSE}
+```{r figure 2, fig.height=2, fig.width=3.5, message=FALSE, warning=FALSE, include=FALSE, fig.cap= "Time-series plots showing the changing in the number of Tool-use locations over time in model run where the number of Sources is 500 and the number of Trees is 2000. Each line in the plots to the right represents an individual iteration of model with time represented on the x-axis and the number of tool-use locations is represented on the y-axis. Note that in iterations where tree locations is dynamic the number of tool-use locations is always greater. The slope of the lines (right) show that the number of tool-using locations will continue to increase and would eventually plateau only after all 2000 Trees became available for tool-use. \\label{tree_death}"}
 
 
 env_data <- fread("../Data/EXP_PNAS_Env_Data_ns_500_nt_2000.csv")
@@ -223,13 +217,13 @@ b <- ggplot(data = dynamic, aes(ts, y=run_id)) + geom_tile(aes(fill = as.numeric
 c <- ggplot(static, aes(x = ts, y = as.numeric(trees_available))) +
   geom_path(aes(group = run_id), alpha = .5) +
   scale_y_continuous(limits = c(500,max(env_data$trees_available)))+
-  labs(x = "Time", y = "Number of Trees Available")+
+  labs(x = "Time", y = "N Tool-use Opportunities")+
   base_theme
 
 d <- ggplot(dynamic, aes(x = ts, y = as.numeric(trees_available))) +
   geom_path(aes(group = run_id), alpha = .5) +
   scale_y_continuous(limits = c(500,max(env_data$trees_available)))+
-  labs(x = "Time", y = "Number of Trees Available")+
+  labs(x = "Time", y = "N Tool-use Opportunities")+
   base_theme
 
 g_legend<-function(a.gplot){
@@ -244,27 +238,26 @@ mylegend <- g_legend(a + theme(legend.direction = "horizontal",
                                legend.background = element_blank()))
 
 
-layout <- rbind(c(1,1,1,2),
-                c(1,1,1,2))
+# layout <- rbind(c(1,1,1,2),
+#                c(1,1,1,2))
 
-arrange
 
-grid.arrange(arrangeGrob(a + theme(legend.pos = "none", axis.text.y = element_blank()),c, layout_matrix = layout),
-             arrangeGrob(b + theme(legend.pos = "none", axis.text.y = element_blank()),d, layout_matrix = layout),
-             mylegend, nrow = 3, heights=c(10, 10, 2.5))
 
+# grid.arrange(arrangeGrob(a + theme(legend.pos = "none", axis.text.y = element_blank()),c, layout_matrix = layout),
+#              arrangeGrob(b + theme(legend.pos = "none", axis.text.y = element_blank()),d, layout_matrix = layout),
+#              mylegend, nrow = 3, heights=c(10, 10, 2.5))
+
+
+grid.arrange(c,d, ncol =2)
 ```
 
 
-\begin{figure*}
-
-\includegraphics[width=6.5in]{Reeves_et_al_2021_Panda_ABM_files/figure-latex/figure 2-1.png}
-
-\caption{Time series plots illustrating the changes in the number of tool-use locations over time when _Trees_ are static (Top) and when they are dynamic (Bottom) for runs where the number of soures is 500 and the number of trees is 2000. The ticks on the y-axes of the color plots to the left represent individual interations of the model. The x-axis represents the time step in the model run. Therefore, any individual cell of color represents the number of locations where tool-use is possible. (Right) Each line represents an individual iteration of model with time represented on the x-axis and the number of tool-use locations is represented on the y-axis. Note that in iterations where _Tree_ locations is dynamic the number of tool-use locations is always greater. The slope of the lines ( Bottom right) show that the number of tool-using locations will continue to incrementally increase instead of plateauing.}
-
+\begin{figure}
+\includegraphics[width=3.25in]{Reeves_et_al_2021_Panda_ABM_files/figure-latex/figure 2-1.pdf}
+\caption{Time-series plots showing the changing in the number of Tool-use locations over time in model run where the number of Sources is 500 and the number of Trees is 2000. Each line in the plots to the right represents an individual iteration of model with time represented on the x-axis and the number of tool-use locations is represented on the y-axis. Note that in iterations where tree locations is dynamic the number of tool-use locations is always greater. The slope of the lines (right) show that the number of tool-using locations will continue to increase and would eventually plateau only after all 2000 Trees became available for tool-use.}
 \label{tree_death}
+\end{figure}
 
-\end{figure*}
 
 
 ### Material Signature
@@ -355,18 +348,14 @@ grid.arrange(a,b,c,leg,
 ```
 
 \begin{figure*}
-
 \includegraphics[width=6.5in]{Reeves_et_al_2021_Panda_ABM_files/figure-latex/figure 3-1.pdf}
-
-\caption{A: The archaeological record when there are 100 _Sources_ and 100 _Trees_. Note that the subsequent archaeological record forms extremely localized patches of material. B: The archaeological record there 100 _Sources_ and 2000 _Trees_. This archaeological record is becoming more wide-spread but remains localized. C: The archaeological record there 100 sources and 2000 trees where trees can die and regrow. The notice how the the growth and death of trees becomes substantially more widespread.}
-
+\caption{A: The archaeological record when there are 100 Sources and 100 Trees. Note that the subsequent archaeological record forms extremely localized patches of material. B: The archaeological record there 100 Sources and 2000 Trees. This archaeological record is becoming more wide-spread but remains localized. C: The archaeological record there 100 sources and 2000 trees where trees can die and regrow. The notice how the the growth and death of trees becomes substantially more widespread.}
 \label{distribution}
-
 \end{figure*}
 
-The total amount of discarded material per grid cell, the number of _Pounding Tools_ and the mass of _Pounding Tools_ form a distance-decay pattern in which these variables are negatively correlated with the distance to Source locations (Figures \ref{assemblages}, SOM Figure 5). The wide range of variance in these metrics in locations closer to _Sources_ is also due to the local configuration of Trees. If the location of Trees does not facilitate _Pounding Tool_ movement then the associated will only occur within the grid cells closest to the Sources (Figures \ref{assemblages}, SOM Fig. 6, SOM Fig. 7).  It is important to note that while this behavior can produce a widespread material record, _Pounding Tools_ are not found in every grid-cell that accumulates an assemblage. Environmental circumstances that promote the movement of _Pounding Tools_ across space (i.e numbers of _Trees_ or dynamic _Tree_ locations) have a negative effect on the proportion of grid-cells that contain re-usable tools (Figure \ref{pounding_tools}). In cases, where tools can move large distances, assemblages with _Pounding Tools_ comprise as little as 2.5% of the broader material record. This suggests there maybe some material records where usable _Pounding Tools_ are not easily recovered.
+The total amount of discarded material per grid cell, the number of _Pounding Tools_ and the mass of _Pounding Tools_ form a distance-decay pattern in which these variables are negatively correlated with the distance to Source locations (SOM Figure 5). The wide range of variance in these metrics in locations closer to _Sources_ is also due to the local configuration of Trees. If the location of Trees does not facilitate _Pounding Tool_ movement then the associated will only occur within the grid cells closest to the Sources (Figures \ref{assemblages}, SOM Fig. 6, SOM Fig. 7).  It is important to note that while this behavior can produce a widespread material record, _Pounding Tools_ are not found in every grid-cell that accumulates an assemblage. Environmental circumstances that promote the movement of _Pounding Tools_ across space (i.e numbers of _Trees_ or dynamic _Tree_ locations) have a negative effect on the proportion of grid-cells that contain re-usable tools (Figure \ref{pounding_tools}). In cases, where tools can move large distances, assemblages with _Pounding Tools_ comprise as little as 2.5% of the broader material record. This suggests there maybe some material records where usable _Pounding Tools_ are not easily recovered.
 
-```{r figure 4, dev='png', dpi= 1000, fig.height=2.5, fig.width=6, include=FALSE}
+```{r figure 4, eval=FALSE, fig.height=3, fig.width=7, dev='png', dpi=1000, include=FALSE}
 
 tools <- fread("../Data/EXP_PNAS_tools_ns_100_nt_2000.csv")
 trees <- fread("../Data/EXP_PNAS_trees.csv")
@@ -386,63 +375,53 @@ a <- ggplot(tools_sum, aes(x = min_d2_source, y= n_tools)) +
   geom_point() + 
   labs(x = "Minimum Distance to Source",
        y = "Number of artifacts") + 
-  base_theme
+  base_theme + 
+  theme(aspect.ratio = 1)
 
 b <- ggplot(tools_sum, aes(x = min_d2_source, y = n_pounding)) + geom_point() + 
     labs(x = "Minimum Distance to Source",
        y = "Number of Pounding Tools") + 
-  base_theme
-
+  base_theme + 
+  theme(aspect.ratio = 1)
 
 OGS_sub <- subset(OGs, treessdie == 1)
 
-c <- ggplot(OGS_sub, aes(x = d2source, y=Tool_size)) + geom_point() + 
+c <- ggplot(OGS_sub, aes(x = d2source, y=Tool_size)) + 
+  geom_point()+
   labs(x = "Distance to Source",
        y = "Pounding Tool Size") + 
-  base_theme
+  scale_y_continuous(labels = function(x) format(x, scientific = TRUE))+
+  base_theme + 
+  theme(aspect.ratio = 1)
 
-grid.arrange(a,b,c, ncol=3)
+run_tools_sum <- fread("../Data/EXP_PNAS_run_tools_sum.csv")
 
+d <- ggplot(run_tools_sum[run_tools_sum$treessdie == 1,], aes(x = as.factor(num_nutree),
+                          y = per_site_pounding, 
+                          fill = as.factor(num_sources))) + 
+  geom_boxplot()+
+  scale_fill_brewer(palette = "Greys")+
+  labs(x = "Number of Trees", y = "% of Sites with Pounding Tools", fill = "N Sources")+
+  base_theme+
+  theme(legend.position = c(.82,.70),
+        legend.title = element_text(size = 8),
+        legend.text = element_text(size = 6),
+        legend.background = element_blank())+
+  theme(aspect.ratio = 1)
+
+grid.arrange(b,c,d, ncol=3)
 
 ```
-
-Discussion
-=============
-
   The model illustrates the dynamic relationship between small scale tool-use and transport, the environment, and the formation of the archaeological record.  Agents only engaged in tool use during chance encounters where tool material could be moved short distances to tool using locations.  Though these results show that resources ultimately dictate the opportunities for tool use, in some circumstances, the aggregate effect of this behavior led to the widespread redistribution of tool material across the landscape. Repeated small scale tool transport has the power to move beyond the constraints of the natural environment to increase the number of opportunities for tool use at future time-steps.  Moreover, this process can work in tandem with the changing distribution of tool use localities over time to further increase the spread of tool material across the landscape. As a result, the landscape that agents inhabit at time step 0 is different to the one they inhabit at time step 75000.   
 	
 \begin{figure*}
-
 \includegraphics[width=6.5in]{Reeves_et_al_2021_Panda_ABM_files/figure-latex/figure 4-1.png}
-
-\caption{Left: A scatter plot showing the relationship between the number of artifacts (e.g. Pounding Tools and fragments) present within a grid-cell and its distance to the nearest source. Grid-cells closer to sources can possess a wider range of artifacts, whereas grid-cells farther from the source consistently possess few artifacts. Middle: Scatter plot showing the relationship of the number Pounding Tools in a grid cell with the distance to the nearest source. Right: The relationship between Pounding Tool size and distance to its source. Note: All plots show runs where the number of sources is 100 and the number of trees is 2000. See SOM figures 5, 6, and 7 for other model runs.}
-
+\caption{Left: Scatter plot showing the relationship of the number Pounding Tools in a grid cell with the distance to the nearest source. Middle: The relationship between Pounding Tool size and distance to its source. Note: All plots show runs where the number of sources is 100 and the number of trees is 2000. See SOM figures 5, 6, and 7 for other model runs. Right: The effect of the environment on the representation of Pounding tools in the simulated material record. Increasing the number of sources increases the percentage of assemblages that contain Pounding Tools. Increasing the number of Trees or allowing the Tree locations to be dynamic (See SOM FIGURE XX) substantially reduces the proportion of assemblages that contain useable tools}
 \label{assemblages}
-
 \end{figure*}
 
   Within primate populations, it has been argued that patterns of tool assisted foraging are largely constrained by encounter rates with resources [@carvalhoToolcompositeReuseWild2009; @koopsEcologyCultureEnvironmental2013]. It has been suggested that long distance movements of tools must occur on rare occasions [@whitenArchaeologyMeetsPrimate2013] or that the repeat short term transport of tools can result the movement of tools over long distances (McGrew 1992). This, however, has never been observed [@lunczDistancedecayEffectStone2016]. Here, our model shows that single long distance tool transport events are not needed to distribute percussive tools across the wider landscape. The aggregate effect of this behavior can increase the number of tool use opportunities over time and space. This illustrates the niche constructing capacity of primate tool using behaviors. The widespread distribution of pounding tools facilitated by their long use-lives generates feedback in which future generations inherit a landscape where opportunities for tool use are greater than they were before. More opportunities for tool-use increases the potential for the acquisition of tool using skills [@koopsEcologyCultureEnvironmental2013; @visalberghiDistributionPotentialSuitable2009; ]. Therefore, small scale tool transport produces a landscape which may ensure the continuation of tool behaviors across generations.
 
-```{r figure 5, echo=FALSE, fig.height=2.25, fig.width=3.5, fig.cap= "The effect of the environment on the representation of _Pounding tools_ in the simulated material record. Increasing the number of sources increases the percentage of assemblages that contain _Pounding Tools_. Increasing the number of _Trees_ or allowing the _Tree_ locations to be dynamic substantially reduces the proportion of assemblages that contain useable tools \\label{pounding_tools}"}
-
-run_tools_sum <- fread("../Data/EXP_PNAS_run_tools_sum.csv")
-
-key <- c("Static Trees", "Dynamic Trees")
-names(key) <- c(0,1)
-
-ggplot(run_tools_sum, aes(x = as.factor(num_nutree),
-                          y = per_site_pounding, 
-                          fill = as.factor(num_sources))) + 
-  geom_boxplot()+facet_wrap(~treessdie, labeller = labeller(treessdie = key)) + 
-  scale_fill_brewer(palette = "Greys")+
-  labs(x = "Number of Trees", y = "% of Sites with Pounding Tools", fill = "N Sources")+
-  base_theme +
-  theme(legend.position = c(.9,.65),
-        legend.title = element_text(size = 8),
-        legend.text = element_text(size = 6),
-        legend.background = element_blank())
-
-```
   
   In this light, the results of the model provide a context for exploring how primates modify their landscape beyond the scope of ethological observations. In the Tai Forest, hammerstones have been recorded up to 2 kilometers from the nearest raw material source [@lunczDistancedecayEffectStone2016]. Furthermore, the distribution of the size and wear of these hammerstones is consistent with the distance-decay relationship described in the model [@lunczDistancedecayEffectStone2016]. Although short distance transport of tools is observed in the Tai Forest, the broader spatial distribution is the end product of individual behaviors that remain undetected as they mostly happen in the absence of observers. This model illustrates the mechanism by which chimpanzees of the Tai Forest could emergently modify the distribution of tool materials across space through repeated re-use and transport of hammerstones. This may imply that, given that tool use is considered to be socially learned [@whitenCulturesChimpanzees1999], chimpanzees may increase their accessibility to resources through a culturally learned behavior. 
 

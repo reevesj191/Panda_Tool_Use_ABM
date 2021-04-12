@@ -128,9 +128,8 @@ their archaeological signature.
 
 % If your first paragraph (i.e. with the \dropcap) contains a list environment (quote, quotation, theorem, definition, enumerate, itemize...), the line after the list may have some extra indentation. If this is the case, add \parshape=0 to the end of the list environment.
 
-\acknow{We thank the Max Planck Society for supporting this research. We
-also thank the Max Planck Institute for Evolutionary Anthropology for
-hosting our research group. JSR thanks the Luke Premo for providing
+\acknow{We thank the Max Planck Institute for Evolutionary Anthropology
+for hosting our research group. JSR thanks the Luke Premo for providing
 feedback and thoughtful discussion on an earlier version of this work.}
 
 The adaptive success of humans is largely based on the transport of
@@ -313,14 +312,9 @@ systemic and archaeological perspectives.
 Dynamics}\label{environment-tool-use-dynamics}}
 
 \begin{figure}
-\centering
-\includegraphics{Reeves_et_al_2021_Panda_ABM_files/figure-latex/figure 1-1.pdf}
-\caption{A two-way interaction plots illustrating the effect of the
-number of \emph{Trees} and number of \emph{Sources} on distance maximum
-distance \emph{Pounding Tools} move from its source. The number of
-sources has a marginal effect on the maximum distances \emph{Pounding
-Tools} move in the model whereas, increasing the number of \emph{Trees}
-has a dramatic effect. \label{d2source}}
+\includegraphics[width=3.25in]{Reeves_et_al_2021_Panda_ABM_files/figure-latex/figure 1-1.pdf}
+\caption{illustrating the effect of the number of Trees and number of Sources on distance maximum distance Pounding Tools move from its source. The number of sources has a marginal effect on the maximum distances Pounding Tools move in the model whereas, increasing the number of Trees has a large positive effect.}
+\label{d2source}
 \end{figure}
 
 At the beginning of each model run tool-use can only occur in places
@@ -368,15 +362,11 @@ to increase (Figure \ref{tree_death}, right) despite the fact that
 \emph{Pounding Tool} transport and \emph{Tree} life cycles operate on
 different temporal scales.
 
-\begin{figure*}
-
-\includegraphics[width=6.5in]{Reeves_et_al_2021_Panda_ABM_files/figure-latex/figure 2-1.png}
-
-\caption{Time series plots illustrating the changes in the number of tool use locations over time when Trees are static (Top) and when they are dynamic (Bottom) for runs where the number of soures is 500 and the number of trees is 2000. The ticks on the y-axes of the color plots to the left represent individual interations of the model. The X-axis represents the time step in the model run. Therefore, any individual cell of color represents the number of locations where tool-use is possible. Each line in the plots to the right represents an individual itetation of model with time represented on the x-axis and the number of tool-use locations is represented on the y-axis. Note that in iterations where tree locations is dynamic the number of tool-use locations is always greater. The slope of the lines (right) show that the number of tool-using locations will continue to increase instead of plateauing.}
-
+\begin{figure}
+\includegraphics[width=3.25in]{Reeves_et_al_2021_Panda_ABM_files/figure-latex/figure 2-1.pdf}
+\caption{Time-series plots showing the changing in the number of Tool-use locations over time in model run where the number of Sources is 500 and the number of Trees is 2000. Each line in the plots to the right represents an individual iteration of model with time represented on the x-axis and the number of tool-use locations is represented on the y-axis. Note that in iterations where tree locations is dynamic the number of tool-use locations is always greater. The slope of the lines (right) show that the number of tool-using locations will continue to increase and would eventually plateau only after all 2000 Trees became available for tool-use.}
 \label{tree_death}
-
-\end{figure*}
+\end{figure}
 
 \hypertarget{material-signature}{%
 \subsubsection{Material Signature}\label{material-signature}}
@@ -398,38 +388,30 @@ densities and environmental stability can substantially influence the
 structure of the archaeological record.
 
 \begin{figure*}
-
 \includegraphics[width=6.5in]{Reeves_et_al_2021_Panda_ABM_files/figure-latex/figure 3-1.pdf}
-
-\caption{A: The archaeological record when there are 100 sources and 100 trees. Notice that the subsequent archaeological record forms extremely localized patches of material. B: The archaeological record there 100 sources and 2000 trees. This archaeological record is becoming more wide-spread but remains localized. C: The archaeological record there 100 sources and 2000 trees where trees can die and regrow. The notice how the the growth and death of trees becomes substantially more widespread.}
-
+\caption{A: The archaeological record when there are 100 Sources and 100 Trees. Note that the subsequent archaeological record forms extremely localized patches of material. B: The archaeological record there 100 Sources and 2000 Trees. This archaeological record is becoming more wide-spread but remains localized. C: The archaeological record there 100 sources and 2000 trees where trees can die and regrow. The notice how the the growth and death of trees becomes substantially more widespread.}
 \label{distribution}
-
 \end{figure*}
 
 The total amount of discarded material per grid cell, the number of
 \emph{Pounding Tools} and the mass of \emph{Pounding Tools} form a
 distance-decay pattern in which these variables are negatively
-correlated with the distance to Source locations (Figures
-\ref{assemblages}, SOM Figure 5). The wide range of variance in these
-metrics in locations closer to \emph{Sources} is also due to the local
-configuration of Trees. If the location of Trees does not facilitate
-\emph{Pounding Tool} movement then the associated will only occur within
-the grid cells closest to the Sources (Figures \ref{assemblages}, SOM
-Fig. 6, SOM Fig. 7). It is important to note that while this behavior
-can produce a widespread material record, \emph{Pounding Tools} are not
-found in every grid-cell that accumulates an assemblage. Environmental
-circumstances that promote the movement of \emph{Pounding Tools} across
-space (i.e numbers of \emph{Trees} or dynamic \emph{Tree} locations)
-have a negative effect on the proportion of grid-cells that contain
-re-usable tools (Figure \ref{pounding_tools}). In cases, where tools can
-move large distances, assemblages with \emph{Pounding Tools} comprise as
-little as 2.5\% of the broader material record. This suggests there
-maybe some material records where usable \emph{Pounding Tools} are not
-easily recovered.
-
-\hypertarget{discussion}{%
-\section{Discussion}\label{discussion}}
+correlated with the distance to Source locations (SOM Figure 5). The
+wide range of variance in these metrics in locations closer to
+\emph{Sources} is also due to the local configuration of Trees. If the
+location of Trees does not facilitate \emph{Pounding Tool} movement then
+the associated will only occur within the grid cells closest to the
+Sources (Figures \ref{assemblages}, SOM Fig. 6, SOM Fig. 7). It is
+important to note that while this behavior can produce a widespread
+material record, \emph{Pounding Tools} are not found in every grid-cell
+that accumulates an assemblage. Environmental circumstances that promote
+the movement of \emph{Pounding Tools} across space (i.e numbers of
+\emph{Trees} or dynamic \emph{Tree} locations) have a negative effect on
+the proportion of grid-cells that contain re-usable tools (Figure
+\ref{pounding_tools}). In cases, where tools can move large distances,
+assemblages with \emph{Pounding Tools} comprise as little as 2.5\% of
+the broader material record. This suggests there maybe some material
+records where usable \emph{Pounding Tools} are not easily recovered.
 
 The model illustrates the dynamic relationship between small scale
 tool-use and transport, the environment, and the formation of the
@@ -448,13 +430,9 @@ the landscape that agents inhabit at time step 0 is different to the one
 they inhabit at time step 75000.
 
 \begin{figure*}
-
 \includegraphics[width=6.5in]{Reeves_et_al_2021_Panda_ABM_files/figure-latex/figure 4-1.png}
-
-\caption{Left: A scatter plot showing the relationship between the number of artifacts (e.g. Pounding Tools and fragments) present within a grid-cell and its distance to the nearest source. Grid-cells closer to sources can possess a wider range of artifacts, whereas grid-cells farther from the source consistently possess few artifacts. Middle: Scatter plot showing the relationship of the number Pounding Tools in a grid cell with the distance to the nearest source. Right: The relationship between Pounding Tool size and distance to its source. Note: All plots show runs where the number of sources is 100 and the number of trees is 2000. See SOM figures 5, 6, and 7 for other model runs.}
-
+\caption{Left: Scatter plot showing the relationship of the number Pounding Tools in a grid cell with the distance to the nearest source. Middle: The relationship between Pounding Tool size and distance to its source. Note: All plots show runs where the number of sources is 100 and the number of trees is 2000. See SOM figures 5, 6, and 7 for other model runs. Right: The effect of the environment on the representation of Pounding tools in the simulated material record. Increasing the number of sources increases the percentage of assemblages that contain Pounding Tools. Increasing the number of Trees or allowing the Tree locations to be dynamic (See SOM FIGURE XX) substantially reduces the proportion of assemblages that contain useable tools}
 \label{assemblages}
-
 \end{figure*}
 
 Within primate populations, it has been argued that patterns of tool
@@ -475,18 +453,6 @@ opportunities for tool-use increases the potential for the acquisition
 of tool using skills {[}(5); (6); {]}. Therefore, small scale tool
 transport produces a landscape which may ensure the continuation of tool
 behaviors across generations.
-
-\begin{figure}
-\centering
-\includegraphics{Reeves_et_al_2021_Panda_ABM_files/figure-latex/figure 5-1.pdf}
-\caption{The effect of the environment on the representation of
-\emph{Pounding tools} in the simulated material record. Increasing the
-number of sources increases the percentage of assemblages that contain
-\emph{Pounding Tools}. Increasing the number of \emph{Trees} or allowing
-the \emph{Tree} locations to be dynamic substantially reduces the
-proportion of assemblages that contain useable tools
-\label{pounding_tools}}
-\end{figure}
 
 In this light, the results of the model provide a context for exploring
 how primates modify their landscape beyond the scope of ethological
