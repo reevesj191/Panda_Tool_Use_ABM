@@ -130,7 +130,7 @@ def connect_db(db_file):
 def add_run_data(conn, data):
 
     try:
-        sql_run_dat = """ INSERT INTO run_data(run_id, datetime, n_time_steps, num_agents, num_sources, num_nutree, treessdie,
+        sql_run_dat = """ INSERT INTO run_data(run_id, datetime, n_time_steps, num_agents, num_sources, num_trees, treesdie,
             tool_acq, search_rad, tree_deaths)
 
                               VALUES(?,?,?,?,?,?,?,?,?,?)
@@ -230,11 +230,9 @@ def add_env_data(conn, data, commit_now=True):
         try:
             sql_run_dat = """ INSERT INTO environment(
                                 run_id,
-                                trees_available,
-                                trees_near_sources,
-                                trees_near_pounding_tools)
+                                trees_available)
                               
-                              VALUES(?,?,?,?)
+                              VALUES(?,?)
             """
             conn.execute(sql_run_dat, data)
             if commit_now is True:

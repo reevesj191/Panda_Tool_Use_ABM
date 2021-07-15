@@ -15,20 +15,6 @@ def compute_trees_available(model):
     trees = [obj.available for obj in model.schedule.agents if isinstance(obj,NutTree)]
     return sum(trees)
 
-def compute_trees_near_source(model):
-
-    trees = [obj.near_source for obj in model.schedule.agents if isinstance(obj,NutTree)]
-    return sum(trees)
-
-def compute_trees_near_pounding_tool(model):
-
-    trees = [obj.near_pounding for obj in model.schedule.agents if isinstance(obj,NutTree)]
-    trees =  [obj for obj in model.schedule.agents if isinstance(obj,PoundingTool) and obj.Tool_size > 2000]
-    return len(trees)
-
-
-
-
 class PrimToolModel(Model):
     def __init__(self, Na, Ns, Nn, height, width, treesdie, max_ts,
                  search_rad=2, tool_acq="nearest", recycle_priority=False,
@@ -43,7 +29,6 @@ class PrimToolModel(Model):
         self.max_ts = max_ts
         self.tool_acquistion = tool_acq # Cut for pub
         self.search_radius = search_rad
-        self.recycle_priority = recycle_priority # Cut for pub
         self.exp_name = db_name
         self.runs_path = "%s_iterations" % self.exp_name
         self.sql = os.path.join(self.runs_path, self.run_id)
@@ -93,36 +78,8 @@ class PrimToolModel(Model):
             self.grid.place_agent(tree, (x, y))
             self.schedule.add(tree)
 
-
-        ##### DEBUG ONLY #####
-        #
-        # for i in range(self.num_sources):
-        #     q = rand.choice([0,25,50,75])
-        #     source = StoneSource(self.next_id(), self, qual=q)
-        #     x = self.random.randrange(self.grid.width)
-        #     y = self.random.randrange(self.grid.height)
-        #     self.grid.place_agent(source, (0, 0))
-        #     self.schedule.add(source)
-        #     row = [self.run_id, source.unique_id, x, y, source.rm_quality] # Line to be added the SQL-DB
-        #     add_source_data(conn, row) # Adds source data to SQL DB
-        #
-        #
-        # tree = NutTree(self.next_id(), self)
-        # tree.age = random.randint(1, 10000)
-        # self.grid.place_agent(tree, (1, 1))
-        # self.schedule.add(tree)
-
-        # tree = NutTree(self.next_id(), self)
-        # tree.age = random.randint(1, 10000)
-        # self.grid.place_agent(tree, (4, 4))
-        # self.schedule.add(tree)
-
-        ### Data Collection
-
         self.tree_datacollector = DataCollector(
-            model_reporters={"Trees Available": compute_trees_available,
-                             "Trees Near Sources": compute_trees_near_source,
-                             "Trees Near Pounding Tools":compute_trees_near_pounding_tool}
+            model_reporters={"Trees Available": compute_trees_available}
 
         )
 
@@ -192,9 +149,7 @@ class PrimToolModel(Model):
             for index, row in environment_data.iterrows():
                 run_id = self.run_id
                 a = int(row['Trees Available'])
-                b = int(row['Trees Near Sources'])
-                c = int(row['Trees Near Pounding Tools'])
-                sql_row = [run_id, a,b,c]
+                sql_row = [run_id, a]
                 add_env_data(conn, sql_row, commit_now=False)
 
             conn.commit()

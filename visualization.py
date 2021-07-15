@@ -2,8 +2,8 @@ from Model_definition import *
 from mesa.visualization.modules import CanvasGrid, ChartModule
 from mesa.visualization.ModularVisualization import ModularServer
 
-h = 5
-w = 5
+h = 50
+w = 50
 
 def agent_portrayal(agent):
 
@@ -62,31 +62,19 @@ chart = ChartModule([{"Label": "Trees Available",
                      "Color": "Black"}],
                     data_collector_name= 'tree_datacollector')
 
-chart2 = ChartModule([{"Label": "Trees Near Sources",
-                     "Color": "Grey"}],
-                    data_collector_name= 'tree_datacollector')
-
-
-chart3 = ChartModule([{"Label": "Trees Near Pounding Tools",
-                     "Color": "Grey"}],
-                    data_collector_name= 'tree_datacollector')
-
-
-
 server = ModularServer(PrimToolModel,
-                       [grid, chart3],
+                       [grid, chart],
                        "Primate Tool Model",
-                       {"Na": 1,
+                       {"Na": 100,
                         "search_rad": 2,
-                        "Ns": 1,
-                        "Nn": 2,
+                        "Ns": 10,
+                        "Nn": 50,
                         "tool_acq": "nearest",
-                        "recycle_priority": True,
-                        "max_ts": 2000,
+                        "max_ts": 500,
                         "width": h, "height": w,
-                        "treesdie": False,
+                        "treesdie": True,
                         "mem_safe": False,
-                        "db_name": "delete.db"})
+                        "db_name": "Visualization"})
 
 server.port = 1234 # The default
 

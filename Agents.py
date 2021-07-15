@@ -16,7 +16,7 @@ class PrimAgent(Agent):
         self.Tool_id = -1    #The id of the tool acquired
         self.Source_id = -1  #The id of the source of the tool
         self.rm_qual = -1    #The quality of the tool acquired
-        #self.active = -1     #Whether or not the tool is active.
+        self.active = -1     #Whether or not the tool is active.
 
     def CheckForTree(self):
 
@@ -56,13 +56,7 @@ class PrimAgent(Agent):
         sources = [obj for obj in neighborhood if isinstance(obj, StoneSource)]  # Subsets out stones
         pounding = [obj for obj in neighborhood if isinstance(obj,PoundingTool) and obj.Tool_size >= 2000]  # Subsets out Pounding tools
 
-        if self.model.recycle_priority is True and len(pounding) > 0:
-
-            return(pounding)
-
-        else:
-
-            return(sources+pounding)
+        return(sources+pounding)
 
     def SelectStone(self, stone_list, selection_method):
         '''
