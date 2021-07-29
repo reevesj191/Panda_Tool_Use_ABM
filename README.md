@@ -32,7 +32,11 @@ There is an option for taking advantage of the parallel prcoessing. However, the
 
 ## Output
 
-### Analyzing the Output
+The raw data of the model is bundled into an individual SQLite database. Each iteration is given its own database. Use the compile.py script to aggregate all of the runs into a single database. SQL is preferred over excel or csv files as the output of the models can be very large in size. This is paricularly the case when all iterations are bundled together. This allows the user to query the database for the specific data they need so that they do not have to load the entire dataset directly into memory during analysis.   
+
+# Bugs, Errors, and Feedback
+
+Feel free to message me with any issues you have using this code. I will do my best to rectify any issues that may arise. 
 
 
 
