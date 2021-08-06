@@ -64,7 +64,7 @@ OGs_sum <- OGs %>%
             max_d2_source = max(d2source))
 
 kable(OGs_sum[,c(1:7)], 
-      caption = "A summary of number of Pounding Tool uses by raw material quality",
+      caption = "A summary of the number of Pounding Tool uses by raw material quality",
       col.names = c("Number of Sources", 
                     "Number of Trees", 
                     "Material Quality",
@@ -85,7 +85,7 @@ run_sum <- run_data[run_data$new_trees <= 0] %>%
 nruns_notools <- nrow(run_data[run_data$n_trees_available_start == 0,])/nrow(run_data)
 
 kable(run_sum, 
-      caption = "Runs where the repeated transport of tools did not result in an increase in the number of Tool-use opportunities",
+      caption = "Runs where the repeated transport of Pounding Tools did not result in an increase in the number of tool-use opportunities",
       col.names = c("Number of Sources", "Number of Trees", "Trees Die", "Number of Runs"))
 ```
 
@@ -128,6 +128,8 @@ ggplot(OGs_sum, aes(x = as.factor(rm_quality), y = max_d2_source)) +
 
 ```{r Tree Growth and Death SOM, echo=FALSE, warning=FALSE, message= FALSE, fig.height=4, fig.width=6.5, fig.cap= "The effect tree death and growth on the maximum distance tools can move from the source. When holding the number of _Trees_ and _Sources_ constant _Pounding Tools_ the maximum distance a pounding tool can move is greater when _Trees_ are able to change their location due to death and regrowth. Black: Static Trees, Grey: Dynamic Trees."}
  
+key <- c("No", "Yes")
+
 ggplot(OGs_sum, aes(x = as.factor(`N Sources`), y = max_d2_source, fill = as.factor(treessdie))) + 
   geom_boxplot()+
   scale_fill_grey(labels = key)+
@@ -171,7 +173,7 @@ tools_sum <- left_join(tools_sum, run_data)
 ```
 
 
-```{r echo=FALSE, warning=FALSE, message= FALSE, fig.height=6, fig.width=6, fig.cap= "The relationship between the number of artifacts found in a grid cell and its distance to the nearest source. Note how the number of _Trees_ attenuates the scale of the distance-decay relationship"}
+```{r echo=FALSE, warning=FALSE, message= FALSE, fig.height=6, fig.width=6, fig.cap= "The relationship between the number of artifacts found in a grid cell and its distance to the nearest source. The number of _Trees_ attenuates the scale of the distance-decay relationship"}
 
 ggplot(tools_sum[tools_sum$treessdie == 1,], aes(x = min_d2_source, y= n_tools)) + 
   geom_point() +
@@ -183,7 +185,7 @@ ggplot(tools_sum[tools_sum$treessdie == 1,], aes(x = min_d2_source, y= n_tools))
 ```
 
 
-```{r echo=FALSE, warning=FALSE, message= FALSE, fig.height=6, fig.width=6,fig.cap= "The relationship between the number of Pounding Tools found in a grid cell and its distance to the nearest source. Note how the number of _Trees_ attenuates the scale and strength of this relationship"}
+```{r echo=FALSE, warning=FALSE, message= FALSE, fig.height=6, fig.width=6,fig.cap= "The relationship between the number of Pounding Tools found in a grid cell and its distance to the nearest source. The number of _Trees_ attenuates the scale and strength of this relationship"}
 
 OGs_sum <- OGs %>% 
   group_by(run_id,x,y) %>% 
@@ -201,7 +203,7 @@ ggplot(OGs_sum, aes(x = min_d2_source, y = n_pounding)) + geom_point()+
 ```
 
 
-```{r echo=FALSE, warning=FALSE, message= FALSE, fig.height=6, fig.width=6, fig.cap= "The relationship between the size of Pounding Tools and distance to their sources. Note how the number of _Trees_ attenuates the scale and strength of this relationship"}
+```{r echo=FALSE, warning=FALSE, message= FALSE, fig.height=6, fig.width=6, fig.cap= "The relationship between the size of Pounding Tools and the distance to their sources. Note how the number of _Trees_ attenuates the scale and strength of this relationship"}
 
 ggplot(OGs, aes(x = d2source, y=Tool_size)) + geom_point()+
   facet_grid(`N Sources`~`N Trees`, labeller = label_both)+
@@ -213,7 +215,7 @@ ggplot(OGs, aes(x = d2source, y=Tool_size)) + geom_point()+
 ```
 
 
-```{r echo=FALSE, warning=FALSE, message= FALSE, fig.height=3, fig.width=3, fig.cap= "The effect of the environment on the representation of Pounding tools in the simulated material record in runs where Tree locations are static. Increasing the number of sources increases the percentage of assemblages that contain Pounding Tools. In comparison with figure 4 (right) in the main text, individual assemblages contain greater proportions of Pounding Tools"}
+```{r echo=FALSE, warning=FALSE, message= FALSE, fig.height=3, fig.width=3, fig.cap= "The effect of the environment on the representation of Pounding tools in the simulated material record in runs where Tree locations are static. Increasing the number of sources increases the percentage of assemblages that contain Pounding Tools. In comparison with figure 4 (c) in the main text, individual assemblages contain greater proportions of Pounding Tools"}
 
 run_tools_sum <- fread("../data/EXP_PNAS_run_tools_sum.csv")
 ggplot(run_tools_sum[run_tools_sum$treessdie == 0,], aes(x = as.factor(num_nutree),
