@@ -17,8 +17,15 @@ def compute_trees_available(model):
 
 class PrimToolModel(Model):
     def __init__(self, Na, Ns, Nn, height, width, treesdie, max_ts,
-                 search_rad=2, tool_acq="nearest", recycle_priority=False,
-                 db_name="pyMate_Panda_ABM.db", mem_safe=True):
+                 search_rad=2, tool_acq="nearest",
+                 db_name="pyMate_Panda_ABM", mem_safe=True):
+
+        self.exp_name = db_name
+        self.runs_path = "%s_iterations" % self.exp_name
+
+        if not os.path.exists(self.runs_path):
+            os.mkdir(self.runs_path)
+
         self.current_id = 0
         self.run_id = get_random_alphanumeric_string(6)
         self.datetime = datetime.now()
@@ -29,10 +36,10 @@ class PrimToolModel(Model):
         self.max_ts = max_ts
         self.tool_acquistion = tool_acq # Cut for pub
         self.search_radius = search_rad
-        self.exp_name = db_name
-        self.runs_path = "%s_iterations" % self.exp_name
         self.sql = os.path.join(self.runs_path, self.run_id)
         self.mem_safe = mem_safe
+
+        create_DB(self.sql)
 
         ### Space, Scheduling
         self.schedule = RandomActivation(self)
@@ -44,12 +51,6 @@ class PrimToolModel(Model):
         self.tree_growth_deaths = 0
         self.running = True
 
-        if not os.path.exists(self.runs_path):
-            os.mkdir(self.runs_path)
-
-        create_DB(self.sql)
-        conn = connect_db(self.sql)
-
         for i in range(self.num_agents):
             primate = PrimAgent(self.next_id(), self)
             x = self.random.randrange(self.grid.width)
@@ -57,6 +58,7 @@ class PrimToolModel(Model):
             self.grid.place_agent(primate, (x, y))
             self.schedule.add(primate)
 
+        conn = connect_db(self.sql)
         for i in range(self.num_sources):
             q = rand.choice([0,25,50,75])
             source = StoneSource(self.next_id(), self, qual=q)
@@ -66,6 +68,8 @@ class PrimToolModel(Model):
             self.schedule.add(source)
             row = [self.run_id, source.unique_id, x, y, source.rm_quality] # Line to be added the SQL-DB
             add_source_data(conn, row) # Adds source data to SQL DB
+        conn.commit()
+        conn.close
 
         for i in range(self.num_nuttree):
             tree = NutTree(self.next_id(), self)
@@ -91,13 +95,11 @@ class PrimToolModel(Model):
 
         if self.timestep == self.max_ts:
             print("Run Finished updating db with tool Data")
+
             conn = connect_db(self.sql)
 
             # Writing Rundata
-
             print("update Run Data table")
-            conn = connect_db(self.sql)
-
             rundat = (self.run_id,
                       self.datetime,
                       self.max_ts,
@@ -109,8 +111,9 @@ class PrimToolModel(Model):
                       self.search_radius,
                       self.tree_growth_deaths)
             add_run_data(conn, rundat)
+            conn.commit()
 
-            conn = connect_db(self.sql)
+            print("update tools data table")
             stone_list = [obj for obj in self.schedule.agents if isinstance(obj, PoundingTool)]
             for agent in stone_list:
                 row = [self.run_id,
@@ -130,7 +133,7 @@ class PrimToolModel(Model):
             conn.commit()
 
             ### Adding Living Trees
-            conn = connect_db(self.sql)
+
             tree_list = [obj for obj in self.schedule.agents if isinstance(obj, NutTree)]
             for agent in tree_list:
                 row = [agent.model.run_id,
@@ -145,7 +148,7 @@ class PrimToolModel(Model):
 
             environment_data = self.tree_datacollector.get_model_vars_dataframe()
 
-            conn = connect_db(self.sql)
+            #conn = connect_db(self.sql)
             for index, row in environment_data.iterrows():
                 run_id = self.run_id
                 a = int(row['Trees Available'])
@@ -153,11 +156,13 @@ class PrimToolModel(Model):
                 add_env_data(conn, sql_row, commit_now=False)
 
             conn.commit()
+            conn.close()
+
             self.running = False
         else:
-            pass
+            self.timestep += 1
 
-        self.timestep += 1
+
 
 
 
