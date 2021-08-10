@@ -195,7 +195,7 @@ class PrimAgent(Agent):
         # the tool in half at best
 
         while fragment >= stone.Tool_size / 2:
-            fragment = random.exponential(200, 1)[0]  # This is eyeballed at best.
+            fragment = random.exponential(200, 1)[0]
 
         stone.Tool_size = stone.Tool_size - fragment  ## The size of the fragment is subtracted from the size to the tool.
         parent_id = stone.tool_id  ## Saves the tool id as the paraent id for the fragment
@@ -252,7 +252,7 @@ class PrimAgent(Agent):
         # the tool in half at best
 
         while fragment > stone.Tool_size / 2:
-            fragment = random.exponential(100, 1)[0]  # This is eyeballed at best.
+            fragment = random.exponential(100, 1)[0]
 
         stone.Tool_size = stone.Tool_size - fragment  ## The size of the fragment is subtracted from the size to the tool.
         parent_id = stone.tool_id  ## Saves the tool id as the paraent id for the fragment
