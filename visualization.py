@@ -58,13 +58,9 @@ def agent_portrayal(agent):
 
 grid = CanvasGrid(agent_portrayal, h, w)
 
-chart = ChartModule([{"Label": "Trees Available",
-                     "Color": "Black"}],
-                    data_collector_name= 'tree_datacollector')
-
 server = ModularServer(PrimToolModel,
-                       [grid, chart],
-                       "Primate Tool Model",
+                       [grid],
+                       "Reeves et. al. (2021) Modeling a Primate Technological Niche",
                        {"Na": 100,
                         "search_rad": 2,
                         "Ns": 10,
@@ -73,7 +69,7 @@ server = ModularServer(PrimToolModel,
                         "max_ts": 500,
                         "width": h, "height": w,
                         "treesdie": True,
-                        "mem_safe": False,
+                        "mem_safe": False, # This must be kept false in order for the visualization to work properly
                         "db_name": "Visualization"})
 
 server.port = 1234 # The default
