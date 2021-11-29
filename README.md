@@ -6,19 +6,13 @@ Running this code is a simple as downloading the folder and running either the b
 
 ## Requirements and Dependencies
 
-Running the model requries a fair amount of RAM. This is particularly the case when using the parallel processing option in behavior space. There is a memory_safe option that can be defined which will cut down on the amount of RAM any single iteration of the model will use. Even with this option set to true it is still RAM intensive. 
+This model was developed using python 3.8.10 using the python agent-based modeling framework mesa. Be sure to  install the python library mesa prior to running this model. All other dependencies come with python 3.8 when it is installed or will be installed when you install mesa. 
 
-Make sure the following python libraries are installed.
+Alternatively, you can set up python to use the virtual environment panda_venv. "panda_venv" is a virtual environment that contains the version of python and libraries that were used to develop the model.
 
-1. Mesa
-2. Numpy
-3. Pandas 
+## Running a single instance of the model
 
-## Running a single Model
-
-To be written. I will provide this code soon.
-
-In the meantime, a nice example for how to write the code to run a single iteration of the model can be found the the MESA website. 
+### Visualization.py
 
 ## Running parameter sweeps
 
