@@ -1,4 +1,4 @@
-This is repository where the code for the agent-based model presented in "Modeling a primate technological niche" is kept and actively maintained.
+This is repository where the code for the agent-based model published in "Modeling a primate technological niche" is kept and actively maintained.
 
 # Using This Code
 
