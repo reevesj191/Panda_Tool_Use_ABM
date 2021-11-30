@@ -94,7 +94,6 @@ def create_DB(db_file):
 
         environment_table = """ CREATE TABLE IF NOT EXISTS environment (
                                 run_id text,
-                                time_step, integer,
                                 trees_available text);
                                 """
 
@@ -231,7 +230,7 @@ def add_env_data(conn, data, commit_now=True):
             sql_run_dat = """ INSERT INTO environment(
                                 run_id,
                                 trees_available)
-                              
+
                               VALUES(?,?)
             """
             conn.execute(sql_run_dat, data)

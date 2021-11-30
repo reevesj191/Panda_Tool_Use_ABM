@@ -2,7 +2,7 @@ import os
 from abm_functions import create_DB, select_table, add_run_data, add_source_data,\
     add_tree_data, add_tool_data, add_env_data, connect_db
 
-pathway = "C:/Users/jonathan_reeves/Documents/GitHub/Panda_Tool_Use_ABM/Model/Experiment_PNAS_iterations/"
+pathway = "Param_Sweep_iterations"
 db_name = "0000_Run_Compiled"
 db_path = os.path.join(pathway,db_name)
 
@@ -38,20 +38,26 @@ for run in runs:
     if len(run_data) > 0:
 
         ## Add Tree_data
+        print("adding trees")
         trees = select_table(run_conn, "trees")
         for tree in trees:
             add_tree_data(master_conn, tree, commit_now=False)
-        ### Add Source_data
+    #     ### Add Source_data
+
+        print("adding sources")
         sources = select_table(run_conn, "sources")
         for source in sources:
             add_source_data(master_conn, source, commit_now=False)
-        ### Add tool_data
+    #     ### Add tool_data
 
+        print("adding Tools")    
         tools = select_table(run_conn, "tools")
         for tool in tools:
             add_tool_data(master_conn, tool, commit_now=False)
 
-        ### Environment Data
+    #     ### Environment Data
+        
+        print("adding environment")
         env = select_table(run_conn, "environment")
         for row in env:
             add_env_data(master_conn, row, commit_now=False)
