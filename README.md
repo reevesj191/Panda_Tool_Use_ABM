@@ -41,8 +41,3 @@ The raw data of the model is bundled into an individual SQLite database. Each it
 # Bugs, Errors, and Feedback
 
 Feel free to message me with any issues you have using this code. I will do my best to rectify any issues that may arise. 
-
-
-
-
- 
