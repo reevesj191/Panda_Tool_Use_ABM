@@ -30,6 +30,3 @@ if __name__ == '__main__':
                              fixed_parameters=fixed_params, # See line 9
                              iterations=2, # The number of interations for each combination of parameters
                              max_steps=750001) # Make sure this number if greater than "max_ts" on line 12
-
-    mp_batch_run.run_all()
-
