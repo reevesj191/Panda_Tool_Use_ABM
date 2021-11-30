@@ -8,7 +8,9 @@ Running this code is a simple as downloading the folder and running either the r
 
 This model was developed using python 3.8.10 using the python agent-based modeling framework mesa. Be sure to  install the python library mesa prior to running this model. All other dependencies come with python 3.8 when it is installed or will be installed when you install mesa. 
 
-Alternatively, you can set up python to use the virtual environment panda_venv. "panda_venv" is a virtual environment that contains the version of python and libraries that were used to develop the model.
+# Using This Code
+
+Running this code is a simple as downloading the folder and running either the run.py, behavior_space.py or visualization.py from your terminal or prefered IDE. Ensure that all of the files associated with the respository remain in the same folder in order to ensure that the code runs properly. 
 
 ## Running a single instance of the model
 
