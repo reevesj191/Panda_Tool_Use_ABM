@@ -17,7 +17,7 @@ fixed_params = {"width": 250,
 
 variable_params = {
     "Nn": (100,500,1000,2000),
-     "Ns": (10,100,150),
+     "Ns": (10,100,500),
     "treesdie":(True, False),
 }
 
