@@ -70,7 +70,7 @@ server = ModularServer(PrimToolModel,
                         "width": h, "height": w,
                         "treesdie": True,
                         "mem_safe": False, # This must be kept false in order for the visualization to work properly
-                        "db_name": "Visualization"})
+                        "db_name": "Flaker_Model/Visualization"})
 
 server.port = 1234 # The default
 
