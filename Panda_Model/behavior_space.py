@@ -9,15 +9,15 @@ from multiprocessing import freeze_support
 fixed_params = {"width": 250,
                 "height":  250,
                 "Na": 100,
-                "max_ts": 100,
+                "max_ts": 75000,
                 "db_name": "Param_Sweep"
 }
 
 # PARAMETERS TO BE VARIED
 
 variable_params = {
-    "Nn": (100,101,102,103),
-     "Ns": (10,11,12),
+    "Nn": (100,500,1000,2000),
+     "Ns": (10,100,500),
     "treesdie":(True, False),
 }
 
