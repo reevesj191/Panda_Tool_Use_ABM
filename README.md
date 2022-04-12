@@ -1,5 +1,7 @@
 This is repository where the code for the agent-based model published in "Modeling a primate technological niche" is kept and actively maintained.
 
+**I AM CURRENTLY ADJUSTING THE CODE TO ACCOMODATE THE NEW MESA UPDATES. THANK YOU FOR YOUR PATIENCE.**
+
 # Using This Code
 
 Running this code is a simple as downloading the folder and running either the run.py, behavior_space.py or visualization.py from your terminal or prefered IDE. Ensure that all of the files associated with the respository remain in the same folder in order to ensure that the code runs properly. 
