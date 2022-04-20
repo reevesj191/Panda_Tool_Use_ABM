@@ -64,12 +64,12 @@ server = ModularServer(PrimToolModel,
                        {"Na": 100,
                         "search_rad": 2,
                         "Ns": 10,
-                        "Nn": 50,
+                        "Nn": 200,
                         "tool_acq": "nearest",
                         "max_ts": 500,
                         "width": h, "height": w,
                         "treesdie": True,
-                        "mem_safe": False, # This must be kept false in order for the visualization to work properly
+                        "mem_safe": True, # This must be kept false in order for the visualization to work properly
                         "db_name": "Flaker_Model/Visualization"})
 
 server.port = 1234 # The default

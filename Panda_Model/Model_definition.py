@@ -34,7 +34,7 @@ class PrimToolModel(Model):
         self.num_nuttree = Nn
         self.treesdie = treesdie
         self.max_ts = max_ts
-        self.tool_acquistion = tool_acq # Cut for pub
+        self.tool_acquistion = tool_acq 
         self.search_radius = search_rad
         self.sql = os.path.join(self.runs_path, self.run_id)
         self.mem_safe = mem_safe

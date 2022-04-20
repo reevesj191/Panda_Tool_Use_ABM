@@ -57,6 +57,12 @@ def create_DB(db_file):
                                 num_trees integer,
                                 treesdie integer,
                                 tool_acq text,
+                                mean_tool_size text,
+                                min_tool_size text,
+                                sd_tool_size text,
+                                mean_frag_size text,
+                                min_frag_size text,
+                                sd_frag_size text,
                                 search_rad integer,
                                 tree_deaths integer); """
 
@@ -128,11 +134,13 @@ def connect_db(db_file):
 
 def add_run_data(conn, data):
 
+
+
     try:
         sql_run_dat = """ INSERT INTO run_data(run_id, datetime, n_time_steps, num_agents, num_sources, num_trees, treesdie,
-            tool_acq, search_rad, tree_deaths)
+            tool_acq, mean_tool_size, min_tool_size, sd_tool_size, mean_frag_size, min_frag_size, sd_frag_size, search_rad, tree_deaths)
 
-                              VALUES(?,?,?,?,?,?,?,?,?,?)
+                              VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             """
 
         conn.execute(sql_run_dat, data)

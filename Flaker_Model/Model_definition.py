@@ -15,10 +15,13 @@ def compute_trees_available(model):
     trees = [obj.available for obj in model.schedule.agents if isinstance(obj,NutTree)]
     return sum(trees)
 
+
 class PrimToolModel(Model):
     def __init__(self, Na, Ns, Nn, height, width, treesdie, max_ts,
                  search_rad=2, tool_acq="nearest",
-                 db_name="pyMate_Panda_ABM", mem_safe=True):
+                 tool_size_mean = 240, tool_size_min = 30, tool_size_sd = 148,
+                 frag_size_mean = 10.1, frag_size_min = 1, frag_size_sd = 15.9, 
+                 db_name="Koobi_Fora", mem_safe=True):
 
         self.exp_name = db_name
         self.runs_path = "%s_iterations" % self.exp_name
@@ -26,6 +29,8 @@ class PrimToolModel(Model):
         if not os.path.exists(self.runs_path):
             os.mkdir(self.runs_path)
 
+
+        
         self.current_id = 0
         self.run_id = get_random_alphanumeric_string(6)
         self.datetime = datetime.now()
@@ -34,8 +39,19 @@ class PrimToolModel(Model):
         self.num_nuttree = Nn
         self.treesdie = treesdie
         self.max_ts = max_ts
-        self.tool_acquistion = tool_acq # Cut for pub
+
+        self.mean_tool_size = tool_size_mean # Panda Flaker Mods
+        self.min_tool_size = tool_size_min # Panda Flaker mods
+        self.sd_tool_size = tool_size_sd # Panda Flaker mods
+
+        self.mean_frag_size = frag_size_mean # Panda Flaker Mods
+        self.min_frag_size = frag_size_min # Panda Flaker mods
+        self.sd_frag_size = frag_size_sd # Panda Flaker mods
+
+
+        self.tool_acquistion = tool_acq 
         self.search_radius = search_rad
+
         self.sql = os.path.join(self.runs_path, self.run_id)
         self.mem_safe = mem_safe
 
@@ -82,14 +98,14 @@ class PrimToolModel(Model):
             self.grid.place_agent(tree, (x, y))
             self.schedule.add(tree)
 
-        self.tree_datacollector = DataCollector(
+        self.datacollector = DataCollector(
             model_reporters={"Trees Available": compute_trees_available}
 
         )
 
 
     def step(self):
-        self.tree_datacollector.collect(self)
+        self.datacollector.collect(self)
         '''Advances the model by one step'''
         self.schedule.step()
 
@@ -99,6 +115,7 @@ class PrimToolModel(Model):
             conn = connect_db(self.sql)
 
             # Writing Rundata
+
             print("update Run Data table")
             rundat = (self.run_id,
                       self.datetime,
@@ -108,6 +125,12 @@ class PrimToolModel(Model):
                       self.num_nuttree,
                       self.treesdie,
                       self.tool_acquistion,
+                      self.mean_tool_size,
+                      self.min_tool_size,
+                      self.sd_tool_size,
+                      self.mean_frag_size,
+                      self.min_frag_size,
+                      self.sd_frag_size,
                       self.search_radius,
                       self.tree_growth_deaths)
             add_run_data(conn, rundat)
@@ -146,7 +169,7 @@ class PrimToolModel(Model):
                 add_tree_data(conn, row, commit_now=False)
             conn.commit()
 
-            environment_data = self.tree_datacollector.get_model_vars_dataframe()
+            environment_data = self.datacollector.get_model_vars_dataframe()
 
             #conn = connect_db(self.sql)
             for index, row in environment_data.iterrows():

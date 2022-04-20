@@ -1,32 +1,87 @@
 from Model_definition import *
-from mesa.batchrunner import BatchRunnerMP
+from mesa.batchrunner import batch_run
 from multiprocessing import freeze_support
 
 
 
-# PARAMTERS THAT WILL REMAIN THE SAME IN ALL RUNS
+#FxJj 50
 
-fixed_params = {"width": 250,
+params = {"width": 250,
                 "height":  250,
                 "Na": 100,
                 "max_ts": 75000,
-                "db_name": "Param_Sweep"
-}
+                "Nn": 2000,
+                "treesdie": True,
+                #"db_name": "FxJj50",
+                "Ns": (10,100,500),
+                "tool_size_mean": 125,
+                "tool_size_min": 10,
+                "tool_size_sd": 92,
+                "frag_size_mean": 5.6,
+                "frag_size_min": 1,
+                "frag_size_sd": 8.7
+                }
 
-# PARAMETERS TO BE VARIED
+if __name__ == '__main__':
+    freeze_support()
 
-variable_params = {
-    "Nn": (100,500,1000,2000),
-     "Ns": (10,100,500),
-    "treesdie":(True, False),
+    batch_run(model_cls=PrimToolModel,  
+    parameters= params, 
+    number_processes= 40,
+    iterations= 20,
+    max_steps=75001,
+    data_collection_period=1)
+
+#FxJj20E
+params = {"width": 250,
+                "height":  250,
+                "Na": 100,
+                "max_ts": 75000,
+                "Nn": 2000,
+                "treesdie": True,
+                #"db_name": "FxJj20",
+                "Ns": (10,100,500),
+                "tool_size_mean": 218,
+                "tool_size_min": 34,
+                "tool_size_sd": 197,
+                "frag_size_mean": 10, 
+                "frag_size_min": 1,
+                "frag_size_sd": 15.9
+                }
+
+if __name__ == '__main__':
+    freeze_support()
+
+    batch_run(model_cls=PrimToolModel,  
+    parameters= params, 
+    number_processes= 40,
+    iterations= 20,
+    max_steps=75001,
+    data_collection_period=1)
+
+#FxJj16
+params = {"width": 250,
+                "height":  250,
+                "Na": 100,
+                "max_ts": 75000,
+                "Nn": 2000,
+                "treesdie": True,
+                #"db_name": "FxJj16",
+                "Ns": (10,100,500),
+                "tool_size_mean": 535,
+                "tool_size_min": 103,
+                "tool_size_sd": 520, 
+                "frag_size_mean": 150, 
+                "frag_size_min": 26,
+                "frag_size_sd": 146
 }
 
 if __name__ == '__main__':
     freeze_support()
 
-    mp_batch_run = BatchRunnerMP(model_cls=PrimToolModel,
-                             nr_processes=4, # Number of cores to use
-                             variable_parameters=variable_params, # See line 18 
-                             fixed_parameters=fixed_params, # See line 9
-                             iterations=2, # The number of interations for each combination of parameters
-                             max_steps=750001) # Make sure this number if greater than "max_ts" on line 12
+    batch_run(model_cls=PrimToolModel,  
+    parameters= params, 
+    number_processes= 40,
+    iterations= 20,
+    max_steps=75001,
+    data_collection_period=1)

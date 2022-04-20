@@ -54,7 +54,7 @@ class PrimAgent(Agent):
         # Subsets out all of the stone sources and pounding tools. This way tree agents are not accidentally selected
         # as stones.
         sources = [obj for obj in neighborhood if isinstance(obj, StoneSource)]  # Subsets out stones
-        pounding = [obj for obj in neighborhood if isinstance(obj,PoundingTool) and obj.Tool_size >= 2000]  # Subsets out Pounding tools
+        pounding = [obj for obj in neighborhood if isinstance(obj,PoundingTool) and obj.active == True]  # Subsets out Pounding tools
 
         return(sources+pounding)
 
@@ -103,8 +103,8 @@ class PrimAgent(Agent):
             # Determining the size of the tool
             # A while loop is used to ensure that generated tools have a size of greater than 2000 grams.
 
-            while self.Tool_size < 2000:
-                self.Tool_size = random.normal(7400,3900,1)[0] # Size of the tool is randomly drawn from a normal distribution
+            while self.Tool_size < self.model.min_tool_size:
+                self.Tool_size = random.normal(self.model.mean_tool_size,self.model.min_tool_size,1)[0] # Size of the tool is randomly drawn from a normal distribution
                                                                # with the mean and sd of tools found in the Tai forest
 
             self.Has_tool = 1 # For Debugging purposes.
@@ -148,8 +148,9 @@ class PrimAgent(Agent):
 
             # determines whether a stone will break or not.
 
+        
             Break_prob = random.randint(1,100) # randomly draw an integer from 1 to 0
-
+            Break_prob = -1
             # All stones have a 25% chance to break plus the qualifier they get from there raw material quality. If the
             # the break prob is less than or equal to 25 + the stone's rm quality then the stone breaks.
 
@@ -189,28 +190,22 @@ class PrimAgent(Agent):
 
         fragment = stone.Tool_size  # Sets the maximum size of the peice that breaks off.
 
-        # A random expontial distribution is drawn from to determine the size of the piece that breaks off
-        # This ensures that fragmentation will prefer small over large pieces. A while loop is used to ensure that the
-        # size of the fragment is not larger than half the size of the tool. This means that  fragmentation can only split
-        # the tool in half at best
-
-        while fragment >= stone.Tool_size / 2:
-            fragment = random.exponential(200, 1)[0]
+        while fragment >= stone.Tool_size: # This ensures that the flake is not larger than the core
+            fragment = random.normal(self.model.mean_frag_size,self.model.min_frag_size,1)[0]
 
         stone.Tool_size = stone.Tool_size - fragment  ## The size of the fragment is subtracted from the size to the tool.
-        parent_id = stone.tool_id  ## Saves the tool id as the paraent id for the fragment
+        parent_id = stone.tool_id  ## Saves the tool id as the parent id for the fragment
 
-        ## if the tool size remains larger than 2000 then it remains active as a useable tool.
-        if stone.Tool_size < 2000:
+        ## if the tool size remains larger than min core size then it remains active as a useable tool.
+        if stone.Tool_size < self.model.min_tool_size:
             # print("tool exhausted")
-            ## if it is less than 2000 it is considered exhausted and becomes no longer useable
             stone.active = False  ## Switching this from True to False stops the tool from being used again.
             stone.ts_died = self.model.timestep  ## Records the time step at which the tool became in active.
         else:
             pass
 
         ## This true false statement determines whether the fragment will also be active as a tool or not
-        if fragment >= 2000:
+        if fragment >= self.model.min_tool_size:
             active = True
         else:
             active = False
@@ -244,6 +239,9 @@ class PrimAgent(Agent):
                 :return:
                 """
 
+
+
+
         fragment = stone.Tool_size  # Sets the maximum size of the piece that breaks off.
 
         # A random expontial distribution is drawn from to determine the size of the piece that breaks off
@@ -251,15 +249,15 @@ class PrimAgent(Agent):
         # size of the fragment is not larger than half the size of the tool. This means that  fragmentation can only split
         # the tool in half at best
 
-        while fragment > stone.Tool_size / 2:
-            fragment = random.exponential(100, 1)[0]
-
+        while fragment >= stone.Tool_size:
+            fragment = random.normal(self.model.mean_frag_size,self.model.min_frag_size,1)[0]
+        
         stone.Tool_size = stone.Tool_size - fragment  ## The size of the fragment is subtracted from the size to the tool.
         parent_id = stone.tool_id  ## Saves the tool id as the paraent id for the fragment
 
         ## if the tool size remains larger than 2000 then it remains active as a useable tool.
 
-        if stone.Tool_size < 2000:
+        if stone.Tool_size < self.model.min_tool_size:
             ## if it is less than 2000 it is considered exhausted and becomes no longer useable
             # print("Tool Exhausted")
             stone.active = False  ## Switching this from True to False stops the tool from being used again.
@@ -293,9 +291,9 @@ class PrimAgent(Agent):
         ## This true false statement determines whether the fragment will also be active as a tool or not
 
         # Creates the fragment as an agent of the poundingtool class
-        active = -1
+        
 
-        if fragment >= 2000:
+        if fragment >= self.model.min_tool_size:
             active = True
             new_tool = PoundingTool(self.model.next_id(),
                                     self.model,
@@ -327,7 +325,7 @@ class PrimAgent(Agent):
                    active,
                    stone.rm_quality,
                    self.model.timestep,  # ts born
-                   self.model.timestep,  # ts died
+                   ts_died,  # ts died
                    0]  # n uses
             add_tool_data(conn=conn, data=row, commit_now=True)
 
