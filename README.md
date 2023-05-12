@@ -8,7 +8,7 @@ Running this code is a simple as downloading the folder and running either the r
 
 ## Requirements and Dependencies
 
-This model was developed using python 3.11 using the python agent-based modeling framework mesa. Be sure to  install the python library mesa prior to running this model. All other dependencies come with python 3.8 when it is installed or will be installed when you install mesa. 
+This model was developed using python 3.11 using the python agent-based modeling framework mesa. Be sure to  install the python library mesa prior to running this model. All other dependencies come with python when it is installed or will be installed when you install mesa. 
 
 ## Running a single instance of the model
 
