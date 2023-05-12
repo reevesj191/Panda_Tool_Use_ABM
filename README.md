@@ -1,4 +1,4 @@
-This is repository where the code for the agent-based model published in "Modeling a primate technological niche" is kept and actively maintained.
+This is repository where the code for the agent-based models published in "Modeling a primate technological niche" and "Modeling Oldowan tool transport from a primate perspective" is kept and actively maintained.
 
 **I AM CURRENTLY ADJUSTING THE CODE TO ACCOMODATE THE NEW MESA UPDATES. THANK YOU FOR YOUR PATIENCE.**
 
@@ -8,7 +8,7 @@ Running this code is a simple as downloading the folder and running either the r
 
 ## Requirements and Dependencies
 
-This model was developed using python 3.8.10 using the python agent-based modeling framework mesa. Be sure to  install the python library mesa prior to running this model. All other dependencies come with python 3.8 when it is installed or will be installed when you install mesa. 
+This model was developed using python 3.11 using the python agent-based modeling framework mesa. Be sure to  install the python library mesa prior to running this model. All other dependencies come with python 3.8 when it is installed or will be installed when you install mesa. 
 
 ## Running a single instance of the model
 
