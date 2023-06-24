@@ -1,10 +1,10 @@
 This is repository where the code for the agent-based models published in "Modeling a primate technological niche" and "Modeling Oldowan tool transport from a primate perspective" is kept and actively maintained.
 
-**I AM CURRENTLY ADJUSTING THE CODE TO ACCOMODATE THE NEW MESA UPDATES. THANK YOU FOR YOUR PATIENCE.**
+**I AM CURRENTLY ADJUSTING THE CODE TO ACCOMODATE THE NEW MESA UPDATES. THANK YOU FOR YOUR PATIENCE. UPDATE: THIS HAS BEEN ADJUSTED FOR THE "Modeling Oldowan Model" but not yet for the Primate Model**
 
 # Using This Code
 
-Running this code is a simple as downloading the folder and running either the run.py, behavior_space.py or visualization.py from your terminal or prefered IDE. Ensure that all of the files associated with the respository remain in the same folder in order to ensure that the code runs properly. 
+Running this code is a simple as downloading the folder and running either the run.py, behavior_space.py or visualization.py from your terminal or prefered IDE. Ensure that all of the files associated with the respository remain in the same folder in order to ensure that the code runs properly. This instructions apply to both models. 
 
 ## Requirements and Dependencies
 
